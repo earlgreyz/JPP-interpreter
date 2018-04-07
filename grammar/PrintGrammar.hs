@@ -142,6 +142,7 @@ instance Print Type where
     TInt -> prPrec i 0 (concatD [doc (showString "int")])
     TBool -> prPrec i 0 (concatD [doc (showString "bool")])
     TError -> prPrec i 0 (concatD [doc (showString "error")])
+    TString -> prPrec i 0 (concatD [doc (showString "string")])
     TVoid -> prPrec i 0 (concatD [doc (showString "void")])
     TArray type_ -> prPrec i 0 (concatD [doc (showString "["), prt 0 type_, doc (showString "]")])
     TMap type_1 type_2 -> prPrec i 0 (concatD [doc (showString "{"), prt 0 type_1, doc (showString ","), prt 0 type_2, doc (showString "}")])

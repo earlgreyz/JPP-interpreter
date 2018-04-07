@@ -57,6 +57,7 @@ data Type
     = TInt
     | TBool
     | TError
+    | TString
     | TVoid
     | TArray Type
     | TMap Type Type

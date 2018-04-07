@@ -39,8 +39,8 @@ The reserved words used in Grammar are the following:
   | ``and`` | ``bool`` | ``defer`` | ``else``
   | ``error`` | ``false`` | ``for`` | ``func``
   | ``if`` | ``int`` | ``not`` | ``or``
-  | ``return`` | ``to`` | ``true`` | ``var``
-  | ``void`` | ``while`` |  | 
+  | ``return`` | ``string`` | ``to`` | ``true``
+  | ``var`` | ``void`` | ``while`` | 
 
 The symbols used in Grammar are the following:
   | : | , | [ | ]
@@ -102,6 +102,7 @@ All other symbols are terminals.
   | //Type// | -> | ``int`` 
   |  |  **|**  | ``bool`` 
   |  |  **|**  | ``error`` 
+  |  |  **|**  | ``string`` 
   |  |  **|**  | ``void`` 
   |  |  **|**  | ``[`` //Type// ``]`` 
   |  |  **|**  | ``{`` //Type// ``,`` //Type// ``}`` 

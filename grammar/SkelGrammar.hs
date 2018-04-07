@@ -62,6 +62,7 @@ transType x = case x of
   TInt -> failure x
   TBool -> failure x
   TError -> failure x
+  TString -> failure x
   TVoid -> failure x
   TArray type_ -> failure x
   TMap type_1 type_2 -> failure x

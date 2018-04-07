@@ -20,8 +20,8 @@ transProgram x = case x of
   Prog stmts -> failure x
 transBoolean :: Boolean -> Result
 transBoolean x = case x of
-  True -> failure x
-  False -> failure x
+  BTrue -> failure x
+  BFalse -> failure x
 transMap :: Map -> Result
 transMap x = case x of
   MapKV value1 value2 -> failure x

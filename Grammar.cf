@@ -3,6 +3,7 @@ comment "/*" "*/" ;
 
 {- Program -}
 Prog.  Program  ::= [Stmt] ;
+entrypoints Program ;
 
 {- Type literals -}
 token Error '`' ((char - ["\"\\"]) | ('\\' ["\"\\nt"]))* '`' ;
@@ -50,7 +51,7 @@ coercions BExp 3 ;
 TInt.     Type  ::= "int" ;
 TBool.    Type  ::= "bool" ;
 TError.   Type  ::= "error" ;
-TVoid.    Type  ::= "void" ;
+TString.  Type  ::= "string" ;
 TArray.   Type  ::= "[" Type "]" ;
 TMap.     Type  ::= "{" Type "," Type "}" ;
 TTuple.   Type  ::= "<" [Type] ">" ;

@@ -93,8 +93,8 @@ instance Print Program where
 
 instance Print Boolean where
   prt i e = case e of
-    True -> prPrec i 0 (concatD [doc (showString "true")])
-    False -> prPrec i 0 (concatD [doc (showString "false")])
+    BTrue -> prPrec i 0 (concatD [doc (showString "true")])
+    BFalse -> prPrec i 0 (concatD [doc (showString "false")])
 
 instance Print Map where
   prt i e = case e of

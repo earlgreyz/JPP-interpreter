@@ -9,29 +9,6 @@ import ErrM
 }
 
 %name pProgram Program
-%name pBoolean Boolean
-%name pMap Map
-%name pListMap ListMap
-%name pLiteral Literal
-%name pExp2 Exp2
-%name pExp1 Exp1
-%name pExp Exp
-%name pBExp3 BExp3
-%name pBExp2 BExp2
-%name pBExp1 BExp1
-%name pBExp BExp
-%name pType Type
-%name pListType ListType
-%name pRet Ret
-%name pParam Param
-%name pListParam ListParam
-%name pFunc Func
-%name pCall Call
-%name pValue Value
-%name pListValue ListValue
-%name pDecl Decl
-%name pStmt Stmt
-%name pListStmt ListStmt
 -- no lexer declaration
 %monad { Err } { thenM } { returnM }
 %tokentype {Token}
@@ -70,13 +47,14 @@ import ErrM
   'not' { PT _ (TS _ 32) }
   'or' { PT _ (TS _ 33) }
   'return' { PT _ (TS _ 34) }
-  'to' { PT _ (TS _ 35) }
-  'true' { PT _ (TS _ 36) }
-  'var' { PT _ (TS _ 37) }
-  'void' { PT _ (TS _ 38) }
-  'while' { PT _ (TS _ 39) }
-  '{' { PT _ (TS _ 40) }
-  '}' { PT _ (TS _ 41) }
+  'string' { PT _ (TS _ 35) }
+  'to' { PT _ (TS _ 36) }
+  'true' { PT _ (TS _ 37) }
+  'var' { PT _ (TS _ 38) }
+  'void' { PT _ (TS _ 39) }
+  'while' { PT _ (TS _ 40) }
+  '{' { PT _ (TS _ 41) }
+  '}' { PT _ (TS _ 42) }
 
 L_integ  { PT _ (TI $$) }
 L_quoted { PT _ (TL $$) }
@@ -146,6 +124,7 @@ Type :: { Type }
 Type : 'int' { AbsGrammar.TInt }
      | 'bool' { AbsGrammar.TBool }
      | 'error' { AbsGrammar.TError }
+     | 'string' { AbsGrammar.TString }
      | 'void' { AbsGrammar.TVoid }
      | '[' Type ']' { AbsGrammar.TArray $2 }
      | '{' Type ',' Type '}' { AbsGrammar.TMap $2 $4 }

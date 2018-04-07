@@ -12,7 +12,7 @@ newtype Error = Error String deriving (Eq, Ord, Show, Read)
 data Program = Prog [Stmt]
   deriving (Eq, Ord, Show, Read)
 
-data Boolean = True | False
+data Boolean = BTrue | BFalse
   deriving (Eq, Ord, Show, Read)
 
 data Map = MapKV Value Value
