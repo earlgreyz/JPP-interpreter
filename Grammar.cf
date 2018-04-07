@@ -1,0 +1,98 @@
+comment "//" ;
+comment "/*" "*/" ;
+
+{- Program -}
+Prog.  Program  ::= [Stmt] ;
+
+{- Type literals -}
+token Error '`' ((char - ["\"\\"]) | ('\\' ["\"\\nt"]))* '`' ;
+
+BTrue.  Boolean  ::= "true" ;
+BFalse. Boolean  ::= "false" ;
+
+MapKV. Map    ::= Value ":" Value ;
+separator Map "," ;
+
+LInt.  Literal  ::= Integer ;
+LBool. Literal  ::= Boolean ;
+LStr.  Literal  ::= String ;
+LErr.  Literal  ::= Error ;
+LArr.  Literal  ::= "[" [Value] "]" ;
+LTup.  Literal  ::= "<" [Value] ">" ;
+LMap.  Literal  ::= "{" [Map] "}" ;
+
+{- Expressions -}
+ECall.    Exp2  ::= Call ;
+EVar.     Exp2  ::= Ident ;
+EInt.     Exp2  ::= Integer ;
+ETimes.   Exp1  ::= Exp1 "*" Exp2 ;
+EDiv.     Exp1  ::= Exp1 "/" Exp2 ;
+EMod.     Exp1  ::= Exp1 "%" Exp2 ;
+EPlus.    Exp   ::= Exp "+" Exp1 ;
+EMinus.   Exp   ::= Exp "-" Exp1 ;
+coercions Exp 2 ;
+
+{- Boolean expressions -}
+BCall.    BExp3 ::= Call ;
+BVar.     BExp3 ::= Ident ;
+BBool.    BExp3 ::= Boolean ;
+BLt.      BExp2 ::= Exp "<" Exp ;
+BGt.      BExp2 ::= Exp ">" Exp ;
+BLe.      BExp2 ::= Exp "<=" Exp ;
+BGe.      BExp2 ::= Exp ">=" Exp ;
+BEq.      BExp2 ::= Exp "==" Exp ;
+BNot.     BExp1 ::= "not" BExp ;
+BAnd.     BExp  ::= BExp "and" BExp1 ;
+BOr.      BExp  ::= BExp "or" BExp1 ;
+coercions BExp 3 ;
+
+{- Types -}
+TInt.     Type  ::= "int" ;
+TBool.    Type  ::= "bool" ;
+TError.   Type  ::= "error" ;
+TVoid.    Type  ::= "void" ;
+TArray.   Type  ::= "[" Type "]" ;
+TMap.     Type  ::= "{" Type "," Type "}" ;
+TTuple.   Type  ::= "<" [Type] ">" ;
+TFunc.    Type  ::= Type "->" Type ;
+separator nonempty Type "," ;
+
+{- Function return types -}
+RVoid.    Ret   ::= "void" ;
+RType.    Ret   ::= Type ;
+
+{- Function parameters -}
+PVal.     Param ::= Ident Type ;
+PRef.     Param ::= Ident "&" Type ;
+separator Param "," ;
+
+{- Functions -}
+FLambda.  Func  ::= "(" [Param] ")" "=>" Ret "{" [Stmt] "}" ;
+FFunc.    Func  ::= Ident ;
+
+FCall.    Call  ::= Ident "(" [Value] ")" ;
+
+{- Values -}
+VExp.     Value ::= Exp ;
+VBExp.    Value ::= BExp ;
+VLit.     Value ::= Literal ;
+VCall.    Value ::= Func "(" [Value] ")" ;
+VLambda.  Value ::= "(" [Param] ")" "=>" Ret "{" [Stmt] "}" ;
+separator Value "," ;
+
+{- Declarations -}
+DVar.     Decl  ::= "var" Ident Type ;
+DVarI.    Decl  ::= "var" Ident Type "=" Value ;
+DFunc.    Decl  ::= "func" Ident "(" [Param] ")" "->" Ret "{" [Stmt] "}" ;
+
+{- Statements -}
+SDecl.    Stmt  ::= Decl ;
+SAssign.  Stmt  ::= Ident "=" Value ;
+SCall.    Stmt  ::= Call ;
+SIf.      Stmt  ::= "if" BExp "{" [Stmt] "}" ;
+SIfelse.  Stmt  ::= "if" BExp "{" [Stmt] "}" "else" "{" [Stmt] "}" ;
+SWhile.   Stmt  ::= "while" BExp "{" [Stmt] "}" ;
+SFor.     Stmt  ::= "for" Ident "=" Integer "to" Integer "{" [Stmt] "}" ;
+SReturn.  Stmt  ::= "return" Value ;
+SDefer.   Stmt  ::= "defer" Call ;
+terminator Stmt ";" ;
