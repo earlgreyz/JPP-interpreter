@@ -1,0 +1,46 @@
+// Function declaration
+func fun(a int, b int) -> int {
+  return a * 2 + 3;
+};
+
+func ref(a &int, b int) -> void {
+  a = b;
+};
+
+// Variable declaration
+var i int = 2;
+var str string = "2";
+var err error = `This is error message`;
+var array [int] = [2, 3];
+var map {string, int} = {"ala": 3, "ma": 2, "kota": 4};
+var tuple <int, int, string> = <2, 3, "ala">;
+var fun int -> string = (a int) => string {
+  return IntToString(a);
+};
+
+// Applying function in declaration
+var appliedFunc int = fun(2);
+var appliedLambda int = (a int) => int {
+  defer fun(2, 3);
+  return a - 2;
+}(4);
+
+// If
+if fun(x, y) < 10 {
+  y = 3;
+};
+
+if x < 10 {
+  y = 3;
+} else {
+  y = 4;
+};
+
+// Loops
+while x and 2 < 3 {
+  x = x + 1;
+};
+
+for i = 0 to 10 {
+  x = i;
+};
