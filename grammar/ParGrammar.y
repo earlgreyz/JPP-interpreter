@@ -22,39 +22,42 @@ import ErrM
   ',' { PT _ (TS _ 7) }
   '-' { PT _ (TS _ 8) }
   '->' { PT _ (TS _ 9) }
-  '/' { PT _ (TS _ 10) }
-  ':' { PT _ (TS _ 11) }
-  ';' { PT _ (TS _ 12) }
-  '<' { PT _ (TS _ 13) }
-  '<=' { PT _ (TS _ 14) }
-  '=' { PT _ (TS _ 15) }
-  '==' { PT _ (TS _ 16) }
-  '=>' { PT _ (TS _ 17) }
-  '>' { PT _ (TS _ 18) }
-  '>=' { PT _ (TS _ 19) }
-  '[' { PT _ (TS _ 20) }
-  ']' { PT _ (TS _ 21) }
-  'and' { PT _ (TS _ 22) }
-  'bool' { PT _ (TS _ 23) }
-  'defer' { PT _ (TS _ 24) }
-  'else' { PT _ (TS _ 25) }
-  'error' { PT _ (TS _ 26) }
-  'false' { PT _ (TS _ 27) }
-  'for' { PT _ (TS _ 28) }
-  'func' { PT _ (TS _ 29) }
-  'if' { PT _ (TS _ 30) }
-  'int' { PT _ (TS _ 31) }
-  'not' { PT _ (TS _ 32) }
-  'or' { PT _ (TS _ 33) }
-  'return' { PT _ (TS _ 34) }
-  'string' { PT _ (TS _ 35) }
-  'to' { PT _ (TS _ 36) }
-  'true' { PT _ (TS _ 37) }
-  'var' { PT _ (TS _ 38) }
-  'void' { PT _ (TS _ 39) }
-  'while' { PT _ (TS _ 40) }
-  '{' { PT _ (TS _ 41) }
-  '}' { PT _ (TS _ 42) }
+  '.' { PT _ (TS _ 10) }
+  '/' { PT _ (TS _ 11) }
+  ':' { PT _ (TS _ 12) }
+  ';' { PT _ (TS _ 13) }
+  '<' { PT _ (TS _ 14) }
+  '<=' { PT _ (TS _ 15) }
+  '<|' { PT _ (TS _ 16) }
+  '=' { PT _ (TS _ 17) }
+  '==' { PT _ (TS _ 18) }
+  '=>' { PT _ (TS _ 19) }
+  '>' { PT _ (TS _ 20) }
+  '>=' { PT _ (TS _ 21) }
+  '[' { PT _ (TS _ 22) }
+  ']' { PT _ (TS _ 23) }
+  'and' { PT _ (TS _ 24) }
+  'bool' { PT _ (TS _ 25) }
+  'defer' { PT _ (TS _ 26) }
+  'else' { PT _ (TS _ 27) }
+  'error' { PT _ (TS _ 28) }
+  'false' { PT _ (TS _ 29) }
+  'for' { PT _ (TS _ 30) }
+  'func' { PT _ (TS _ 31) }
+  'if' { PT _ (TS _ 32) }
+  'int' { PT _ (TS _ 33) }
+  'not' { PT _ (TS _ 34) }
+  'or' { PT _ (TS _ 35) }
+  'return' { PT _ (TS _ 36) }
+  'string' { PT _ (TS _ 37) }
+  'to' { PT _ (TS _ 38) }
+  'true' { PT _ (TS _ 39) }
+  'var' { PT _ (TS _ 40) }
+  'void' { PT _ (TS _ 41) }
+  'while' { PT _ (TS _ 42) }
+  '{' { PT _ (TS _ 43) }
+  '|>' { PT _ (TS _ 44) }
+  '}' { PT _ (TS _ 45) }
 
 L_integ  { PT _ (TI $$) }
 L_quoted { PT _ (TL $$) }
@@ -86,7 +89,7 @@ Literal : Integer { AbsGrammar.LInt $1 }
         | String { AbsGrammar.LStr $1 }
         | Error { AbsGrammar.LErr $1 }
         | '[' ListValue ']' { AbsGrammar.LArr $2 }
-        | '<' ListValue '>' { AbsGrammar.LTup $2 }
+        | '<|' ListValue '|>' { AbsGrammar.LTup $2 }
         | '{' ListMap '}' { AbsGrammar.LMap $2 }
 Exp2 :: { Exp }
 Exp2 : Call { AbsGrammar.ECall $1 }
@@ -125,10 +128,9 @@ Type : 'int' { AbsGrammar.TInt }
      | 'bool' { AbsGrammar.TBool }
      | 'error' { AbsGrammar.TError }
      | 'string' { AbsGrammar.TString }
-     | 'void' { AbsGrammar.TVoid }
      | '[' Type ']' { AbsGrammar.TArray $2 }
      | '{' Type ',' Type '}' { AbsGrammar.TMap $2 $4 }
-     | '<' ListType '>' { AbsGrammar.TTuple $2 }
+     | '<|' ListType '|>' { AbsGrammar.TTuple $2 }
      | Type '->' Type { AbsGrammar.TFunc $1 $3 }
 ListType :: { [Type] }
 ListType : Type { (:[]) $1 } | Type ',' ListType { (:) $1 $3 }
@@ -145,7 +147,8 @@ Func :: { Func }
 Func : '(' ListParam ')' '=>' Ret '{' ListStmt '}' { AbsGrammar.FLambda $2 $5 (reverse $7) }
      | Ident { AbsGrammar.FFunc $1 }
 Call :: { Call }
-Call : Ident '(' ListValue ')' { AbsGrammar.FCall $1 $3 }
+Call : Ident '(' ListValue ')' { AbsGrammar.CFun $1 $3 }
+     | Ident '.' Ident '(' ListValue ')' { AbsGrammar.CMet $1 $3 $5 }
 Value :: { Value }
 Value : Exp { AbsGrammar.VExp $1 }
       | BExp { AbsGrammar.VBExp $1 }
@@ -156,13 +159,19 @@ ListValue :: { [Value] }
 ListValue : {- empty -} { [] }
           | Value { (:[]) $1 }
           | Value ',' ListValue { (:) $1 $3 }
+Var :: { Var }
+Var : Ident { AbsGrammar.VVar $1 }
+ListVar :: { [Var] }
+ListVar : {- empty -} { [] }
+        | Var { (:[]) $1 }
+        | Var ',' ListVar { (:) $1 $3 }
 Decl :: { Decl }
 Decl : 'var' Ident Type { AbsGrammar.DVar $2 $3 }
      | 'var' Ident Type '=' Value { AbsGrammar.DVarI $2 $3 $5 }
      | 'func' Ident '(' ListParam ')' '->' Ret '{' ListStmt '}' { AbsGrammar.DFunc $2 $4 $7 (reverse $9) }
 Stmt :: { Stmt }
 Stmt : Decl { AbsGrammar.SDecl $1 }
-     | Ident '=' Value { AbsGrammar.SAssign $1 $3 }
+     | ListVar '=' Value { AbsGrammar.SAssign $1 $3 }
      | Call { AbsGrammar.SCall $1 }
      | 'if' BExp '{' ListStmt '}' { AbsGrammar.SIf $2 (reverse $4) }
      | 'if' BExp '{' ListStmt '}' 'else' '{' ListStmt '}' { AbsGrammar.SIfelse $2 (reverse $4) (reverse $8) }

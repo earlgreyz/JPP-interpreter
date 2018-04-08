@@ -19,7 +19,7 @@ LBool. Literal  ::= Boolean ;
 LStr.  Literal  ::= String ;
 LErr.  Literal  ::= Error ;
 LArr.  Literal  ::= "[" [Value] "]" ;
-LTup.  Literal  ::= "<" [Value] ">" ;
+LTup.  Literal  ::= "<|" [Value] "|>" ;
 LMap.  Literal  ::= "{" [Map] "}" ;
 
 {- Expressions -}
@@ -54,7 +54,7 @@ TError.   Type  ::= "error" ;
 TString.  Type  ::= "string" ;
 TArray.   Type  ::= "[" Type "]" ;
 TMap.     Type  ::= "{" Type "," Type "}" ;
-TTuple.   Type  ::= "<" [Type] ">" ;
+TTuple.   Type  ::= "<|" [Type] "|>" ;
 TFunc.    Type  ::= Type "->" Type ;
 separator nonempty Type "," ;
 
@@ -71,7 +71,8 @@ separator Param "," ;
 FLambda.  Func  ::= "(" [Param] ")" "=>" Ret "{" [Stmt] "}" ;
 FFunc.    Func  ::= Ident ;
 
-FCall.    Call  ::= Ident "(" [Value] ")" ;
+CFun.     Call  ::= Ident "(" [Value] ")" ;
+CMet.     Call  ::= Ident "." Ident "(" [Value] ")" ;
 
 {- Values -}
 VExp.     Value ::= Exp ;
@@ -81,6 +82,10 @@ VCall.    Value ::= Func "(" [Value] ")" ;
 VLambda.  Value ::= "(" [Param] ")" "=>" Ret "{" [Stmt] "}" ;
 separator Value "," ;
 
+{- Variables -}
+VVar.     Var   ::= Ident ;
+separator Var "," ;
+
 {- Declarations -}
 DVar.     Decl  ::= "var" Ident Type ;
 DVarI.    Decl  ::= "var" Ident Type "=" Value ;
@@ -88,7 +93,7 @@ DFunc.    Decl  ::= "func" Ident "(" [Param] ")" "->" Ret "{" [Stmt] "}" ;
 
 {- Statements -}
 SDecl.    Stmt  ::= Decl ;
-SAssign.  Stmt  ::= Ident "=" Value ;
+SAssign.  Stmt  ::= [Var] "=" Value ;
 SCall.    Stmt  ::= Call ;
 SIf.      Stmt  ::= "if" BExp "{" [Stmt] "}" ;
 SIfelse.  Stmt  ::= "if" BExp "{" [Stmt] "}" "else" "{" [Stmt] "}" ;

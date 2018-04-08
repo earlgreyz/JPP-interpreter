@@ -142,7 +142,7 @@ instance Print Type where
     TInt -> prPrec i 0 (concatD [doc (showString "int")])
     TBool -> prPrec i 0 (concatD [doc (showString "bool")])
     TError -> prPrec i 0 (concatD [doc (showString "error")])
-    TVoid -> prPrec i 0 (concatD [doc (showString "void")])
+    TString -> prPrec i 0 (concatD [doc (showString "string")])
     TArray type_ -> prPrec i 0 (concatD [doc (showString "["), prt 0 type_, doc (showString "]")])
     TMap type_1 type_2 -> prPrec i 0 (concatD [doc (showString "{"), prt 0 type_1, doc (showString ","), prt 0 type_2, doc (showString "}")])
     TTuple types -> prPrec i 0 (concatD [doc (showString "<"), prt 0 types, doc (showString ">")])
@@ -168,7 +168,8 @@ instance Print Func where
 
 instance Print Call where
   prt i e = case e of
-    FCall id values -> prPrec i 0 (concatD [prt 0 id, doc (showString "("), prt 0 values, doc (showString ")")])
+    CFun id values -> prPrec i 0 (concatD [prt 0 id, doc (showString "("), prt 0 values, doc (showString ")")])
+    CMet id1 id2 values -> prPrec i 0 (concatD [prt 0 id1, doc (showString "."), prt 0 id2, doc (showString "("), prt 0 values, doc (showString ")")])
 
 instance Print Value where
   prt i e = case e of
@@ -177,6 +178,12 @@ instance Print Value where
     VLit literal -> prPrec i 0 (concatD [prt 0 literal])
     VCall func values -> prPrec i 0 (concatD [prt 0 func, doc (showString "("), prt 0 values, doc (showString ")")])
     VLambda params ret stmts -> prPrec i 0 (concatD [doc (showString "("), prt 0 params, doc (showString ")"), doc (showString "=>"), prt 0 ret, doc (showString "{"), prt 0 stmts, doc (showString "}")])
+  prtList _ [] = (concatD [])
+  prtList _ [x] = (concatD [prt 0 x])
+  prtList _ (x:xs) = (concatD [prt 0 x, doc (showString ","), prt 0 xs])
+instance Print Var where
+  prt i e = case e of
+    VVar id -> prPrec i 0 (concatD [prt 0 id])
   prtList _ [] = (concatD [])
   prtList _ [x] = (concatD [prt 0 x])
   prtList _ (x:xs) = (concatD [prt 0 x, doc (showString ","), prt 0 xs])
@@ -189,7 +196,7 @@ instance Print Decl where
 instance Print Stmt where
   prt i e = case e of
     SDecl decl -> prPrec i 0 (concatD [prt 0 decl])
-    SAssign id value -> prPrec i 0 (concatD [prt 0 id, doc (showString "="), prt 0 value])
+    SAssign vars value -> prPrec i 0 (concatD [prt 0 vars, doc (showString "="), prt 0 value])
     SCall call -> prPrec i 0 (concatD [prt 0 call])
     SIf bexp stmts -> prPrec i 0 (concatD [doc (showString "if"), prt 0 bexp, doc (showString "{"), prt 0 stmts, doc (showString "}")])
     SIfelse bexp stmts1 stmts2 -> prPrec i 0 (concatD [doc (showString "if"), prt 0 bexp, doc (showString "{"), prt 0 stmts1, doc (showString "}"), doc (showString "else"), doc (showString "{"), prt 0 stmts2, doc (showString "}")])

@@ -57,7 +57,7 @@ data Type
     = TInt
     | TBool
     | TError
-    | TVoid
+    | TString
     | TArray Type
     | TMap Type Type
     | TTuple [Type]
@@ -73,15 +73,18 @@ data Param = PVal Ident Type | PRef Ident Type
 data Func = FLambda [Param] Ret [Stmt] | FFunc Ident
   deriving (Eq, Ord, Show, Read)
 
-data Call = FCall Ident [Value]
+data Call = CFun Ident [Value] | CMet Ident Ident [Value]
   deriving (Eq, Ord, Show, Read)
 
 data Value
-    = VExp Exp
-    | VBExp BExp
-    | VLit Literal
+    = VLit Literal
     | VCall Func [Value]
     | VLambda [Param] Ret [Stmt]
+    | VExp Exp
+    | VBExp BExp
+  deriving (Eq, Ord, Show, Read)
+
+data Var = VVar Ident
   deriving (Eq, Ord, Show, Read)
 
 data Decl
@@ -92,7 +95,7 @@ data Decl
 
 data Stmt
     = SDecl Decl
-    | SAssign Ident Value
+    | SAssign [Var] Value
     | SCall Call
     | SIf BExp [Stmt]
     | SIfelse BExp [Stmt] [Stmt]

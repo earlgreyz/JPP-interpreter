@@ -63,7 +63,6 @@ transType x = case x of
   TBool -> failure x
   TError -> failure x
   TString -> failure x
-  TVoid -> failure x
   TArray type_ -> failure x
   TMap type_1 type_2 -> failure x
   TTuple types -> failure x
@@ -82,7 +81,8 @@ transFunc x = case x of
   FFunc ident -> failure x
 transCall :: Call -> Result
 transCall x = case x of
-  FCall ident values -> failure x
+  CFun ident values -> failure x
+  CMet ident1 ident2 values -> failure x
 transValue :: Value -> Result
 transValue x = case x of
   VExp exp -> failure x
@@ -90,6 +90,9 @@ transValue x = case x of
   VLit literal -> failure x
   VCall func values -> failure x
   VLambda params ret stmts -> failure x
+transVar :: Var -> Result
+transVar x = case x of
+  VVar ident -> failure x
 transDecl :: Decl -> Result
 transDecl x = case x of
   DVar ident type_ -> failure x
@@ -98,7 +101,7 @@ transDecl x = case x of
 transStmt :: Stmt -> Result
 transStmt x = case x of
   SDecl decl -> failure x
-  SAssign ident value -> failure x
+  SAssign vars value -> failure x
   SCall call -> failure x
   SIf bexp stmts -> failure x
   SIfelse bexp stmts1 stmts2 -> failure x

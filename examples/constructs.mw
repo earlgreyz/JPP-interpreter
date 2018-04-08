@@ -13,9 +13,9 @@ var str string = "2";
 var err error = `This is error message`;
 var array [int] = [2, 3];
 var map {string, int} = {"ala": 3, "ma": 2, "kota": 4};
-var tuple <int, int, string> = <2, 3, "ala">;
-var fun int -> string = (a int) => string {
-  return IntToString(a);
+var tuple <| int, int, string |> = <|2, 3, "ala"|>;
+var fun int -> <|string, error|> = (a int) => <| string, error |> {
+  return <| a.ToString(), `` |>;
 };
 
 // Applying function in declaration
@@ -44,3 +44,13 @@ while x and 2 < 3 {
 for i = 0 to 10 {
   x = i;
 };
+
+// Tuple unpacking
+x, y = <| "x", 22 |>;
+
+// Method call
+var x int = 2;
+var y string = x.ToString();
+
+// Function and method call in an expression
+var x int = 2 + myFunc(2) * myArray.Length();

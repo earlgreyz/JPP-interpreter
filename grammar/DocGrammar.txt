@@ -44,11 +44,12 @@ The reserved words used in Grammar are the following:
 
 The symbols used in Grammar are the following:
   | : | , | [ | ]
-  | < | > | { | }
+  | <| | |> | { | }
   | * | / | % | +
-  | - | ( | ) | <=
-  | >= | == | -> | &
-  | => | = | ; | 
+  | - | ( | ) | <
+  | > | <= | >= | ==
+  | -> | & | => | .
+  | = | ; |  | 
 
 ===Comments===
 Single-line comments begin with //.Multiple-line comments are  enclosed with /* and */.
@@ -71,7 +72,7 @@ All other symbols are terminals.
   |  |  **|**  | //String// 
   |  |  **|**  | //Error// 
   |  |  **|**  | ``[`` //[Value]// ``]`` 
-  |  |  **|**  | ``<`` //[Value]// ``>`` 
+  |  |  **|**  | ``<|`` //[Value]// ``|>`` 
   |  |  **|**  | ``{`` //[Map]// ``}`` 
   | //Exp2// | -> | //Call// 
   |  |  **|**  | //Ident// 
@@ -103,10 +104,9 @@ All other symbols are terminals.
   |  |  **|**  | ``bool`` 
   |  |  **|**  | ``error`` 
   |  |  **|**  | ``string`` 
-  |  |  **|**  | ``void`` 
   |  |  **|**  | ``[`` //Type// ``]`` 
   |  |  **|**  | ``{`` //Type// ``,`` //Type// ``}`` 
-  |  |  **|**  | ``<`` //[Type]// ``>`` 
+  |  |  **|**  | ``<|`` //[Type]// ``|>`` 
   |  |  **|**  | //Type// ``->`` //Type// 
   | //[Type]// | -> | //Type// 
   |  |  **|**  | //Type// ``,`` //[Type]// 
@@ -120,6 +120,7 @@ All other symbols are terminals.
   | //Func// | -> | ``(`` //[Param]// ``)`` ``=>`` //Ret// ``{`` //[Stmt]// ``}`` 
   |  |  **|**  | //Ident// 
   | //Call// | -> | //Ident// ``(`` //[Value]// ``)`` 
+  |  |  **|**  | //Ident// ``.`` //Ident// ``(`` //[Value]// ``)`` 
   | //Value// | -> | //Exp// 
   |  |  **|**  | //BExp// 
   |  |  **|**  | //Literal// 
@@ -128,11 +129,15 @@ All other symbols are terminals.
   | //[Value]// | -> | **eps**
   |  |  **|**  | //Value// 
   |  |  **|**  | //Value// ``,`` //[Value]// 
+  | //Var// | -> | //Ident// 
+  | //[Var]// | -> | **eps**
+  |  |  **|**  | //Var// 
+  |  |  **|**  | //Var// ``,`` //[Var]// 
   | //Decl// | -> | ``var`` //Ident// //Type// 
   |  |  **|**  | ``var`` //Ident// //Type// ``=`` //Value// 
   |  |  **|**  | ``func`` //Ident// ``(`` //[Param]// ``)`` ``->`` //Ret// ``{`` //[Stmt]// ``}`` 
   | //Stmt// | -> | //Decl// 
-  |  |  **|**  | //Ident// ``=`` //Value// 
+  |  |  **|**  | //[Var]// ``=`` //Value// 
   |  |  **|**  | //Call// 
   |  |  **|**  | ``if`` //BExp// ``{`` //[Stmt]// ``}`` 
   |  |  **|**  | ``if`` //BExp// ``{`` //[Stmt]// ``}`` ``else`` ``{`` //[Stmt]// ``}`` 
