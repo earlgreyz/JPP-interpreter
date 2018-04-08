@@ -3,11 +3,11 @@
 \usepackage{listings}
 
 \begin{document}
-\section{Variables}
+\section{Definitions and Assignments}
+Let $T$ represent a type \textbf{Annotation} and let $ident$ be an identifier.
 
-\subsection{Definition and Assignment}
-Let $T$ represent a type \textbf{Annotation} and let $name$ be a variable
-identifier. Assuming that type of $value$ matches $T$, $value$ can be one of:
+\subsection{Variables}
+Assuming that type of $value$ matches $T$, $value$ can be one of:
 \begin{itemize}
   \setlength\itemsep{.1em}
   \item a value literal
@@ -17,14 +17,31 @@ identifier. Assuming that type of $value$ matches $T$, $value$ can be one of:
   \item a boolean expression
 \end{itemize}
 
-\texttt{var $name$ $T$;} --- will declare a variable $name$ of type $T$ and assign
-it a default value for type $T$.
+\texttt{var $ident$ $T$;} --- will declare a variable $ident$ of type~$T$ and
+assign it a default value for type~$T$.
 
-\texttt{var $name$ $T$ = $value$; } --- will declare a variable $name$ of type $T$
-and assign it a value of $value$.
+\texttt{var $ident$ $T$ = $value$; } --- will declare a variable $ident$ of
+type~$T$ and assign it a value of $value$.
 
-\texttt{$name$ = $value$;} --- will assign a value of $value$ to the variable
-$name$, where $value$
+\texttt{$ident$ = $value$;} --- will assign a value of $value$ to the variable
+$ident$.
+
+\subsection{Functions}
+\label{def-functions}
+\begin{itemize}
+  \setlength\itemsep{.1em}
+  \item return type $R$ = $T \cup { \texttt{void} }$.
+  \item number of parameters $k \geq 0$
+  \item parameter identifiers $p_i$ of type $T_i$ where $i = 1..k$
+  \item a function body \texttt{[STMT]} --- a list of statements
+\end{itemize}
+
+\texttt{func $ident$($p_1$ $T_1$, ..., $p_k$ $T_k$) -> $R$ \{ [STMT] \}} --- will
+define a function $ident$ with $k$ parameters, a return type $R$ and a body
+\texttt{[STMT]}.
+
+Parameters are passed to the function by value. In order for a variable to be
+passed by reference a type Annotation may be preceded with a \texttt{\&} sign.
 
 \subsection{Types}
 
@@ -94,14 +111,12 @@ Function      & \texttt{$T$ -> $R$ } & \texttt{*}             & \texttt{nil}    
 \end{table}
 
 \paragraph{*Lambda functions}
-Lambda functions follow the syntax: \\
-\texttt{LAMBDA ::= ([PARAM]) => $R$ \{ [STMT] \}}.\\
-\texttt{PARAM ::= IDENT TYPE} and \texttt{[PARAM]} is a comma separated list of
-\texttt{PARAM}. \\
-\texttt{[STMT]} is a function body (a list of statements).
+Lambda functions follow the syntax (uses the same assumptions as in \ref{def-functions}):
 
-A \texttt{nil} function cannot be executed and trying to do so will result
-in a \texttt{Runtime Error}.
+\texttt{($p_1$ $T_1$, ..., $p_k$ $T_k$) => $R$ \{ [STMT] \}}
+
+\texttt{nil} function is a special value indicating no function. It cannot be
+executed and trying to do so will result in a \texttt{Runtime Error}.
 
 \paragraph{Lambda function examples}
 \texttt{var lambda int -> int;} \\
@@ -109,10 +124,36 @@ in a \texttt{Runtime Error}.
 \texttt{var lambda int -> <|int, int|> = (x int) => <|int, int|> \{ \\
   \hspace*{2em} return <|x, x|>; \\
 \};} \\
-\texttt{var lambda <|int, int|> -> int = (x int, y int) => int \{ \\
+\texttt{var lambda int -> int -> int = (x int, y int) => int \{ \\
   \hspace*{2em} return x + y; \\
 \};} \\
 \texttt{var lambda [string] -> string = nil;}
 
+\section{Expressions}
+
+\subsection{Arithmetic expressions}
+Supports standard arithmetic operations $+, -, *, /, \%, ()$ as well as
+variables and function calls (if the return type is an \texttt{int}). Arithmetic
+expressions can have side effects (a function call).
+
+\paragraph{Examples}
+\texttt{2} \\
+\texttt{2 + 4 * (4 + 1)} \\
+\texttt{2 + x * (y - 1)} \\
+\texttt{2 + power(x, 2)} \\
+\texttt{2 + (x int) => int \{ return x * x; \}(5) }
+
+\subsection{Boolean expressions}
+Supports standard boolean operations $and, or, not, ()$, arithmetic expressions
+comparison $<, >, <=, >=, ==$ as well as variables and function calls (if the
+return type is a \texttt{bool}). Boolean expressions can have side effects
+(a function call).
+
+\paragraph{Examples}
+\texttt{true} \\
+\texttt{true or (true and false)} \\
+\texttt{(p and not q) or isEven(x)} \\
+\texttt{x / 2 == 3 or x < 10} \\
+\texttt{(x int) => bool \{ return x \%2 == 1; \}(5) }
 
 \end{document}

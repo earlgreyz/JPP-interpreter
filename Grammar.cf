@@ -93,6 +93,7 @@ DVar.     Decl  ::= "var" Ident Type ;
 DVarI.    Decl  ::= "var" Ident Type "=" Value ;
 DFunc.    Decl  ::= "func" Ident "(" [Param] ")" "->" Ret "{" [Stmt] "}" ;
 
+{- Conditionals -}
 EElif.    Elif  ::= "elif" BExp "{" [Stmt] "}" ;
 separator Elif "" ;
 EElse.    Else  ::= "else" "{" [Stmt] "}" ;
