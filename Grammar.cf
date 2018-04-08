@@ -21,6 +21,7 @@ LErr.  Literal  ::= Error ;
 LArr.  Literal  ::= "[" [Value] "]" ;
 LTup.  Literal  ::= "<|" [Value] "|>" ;
 LMap.  Literal  ::= "{" [Map] "}" ;
+LFun.  Literal  ::= "nil" ;
 
 {- Expressions -}
 ECall.    Exp2  ::= Call ;
@@ -53,9 +54,9 @@ TBool.    Type  ::= "bool" ;
 TError.   Type  ::= "error" ;
 TString.  Type  ::= "string" ;
 TArray.   Type  ::= "[" Type "]" ;
-TMap.     Type  ::= "{" Type "," Type "}" ;
+TMap.     Type  ::= "{" Type ":" Type "}" ;
 TTuple.   Type  ::= "<|" [Type] "|>" ;
-TFunc.    Type  ::= Type "->" Type ;
+TFunc.    Type  ::= Type "->" Ret ;
 separator nonempty Type "," ;
 
 {- Function return types -}
@@ -75,15 +76,16 @@ CFun.     Call  ::= Ident "(" [Value] ")" ;
 CMet.     Call  ::= Ident "." Ident "(" [Value] ")" ;
 
 {- Values -}
+VLit.     Value ::= Literal ;
+VVar.     Value ::= Ident ;
+VFunc.    Value ::= Func ;
+VCall.    Value ::= Func "(" [Value] ")" ;
 VExp.     Value ::= Exp ;
 VBExp.    Value ::= BExp ;
-VLit.     Value ::= Literal ;
-VCall.    Value ::= Func "(" [Value] ")" ;
-VLambda.  Value ::= "(" [Param] ")" "=>" Ret "{" [Stmt] "}" ;
 separator Value "," ;
 
 {- Variables -}
-VVar.     Var   ::= Ident ;
+AVar.     Var   ::= Ident ;
 separator Var "," ;
 
 {- Declarations -}

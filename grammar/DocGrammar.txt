@@ -38,9 +38,10 @@ The set of reserved words is the set of terminals appearing in the grammar. Thos
 The reserved words used in Grammar are the following:
   | ``and`` | ``bool`` | ``defer`` | ``elif``
   | ``else`` | ``error`` | ``false`` | ``for``
-  | ``func`` | ``if`` | ``int`` | ``not``
-  | ``or`` | ``return`` | ``string`` | ``to``
-  | ``true`` | ``var`` | ``void`` | ``while``
+  | ``func`` | ``if`` | ``int`` | ``nil``
+  | ``not`` | ``or`` | ``print`` | ``return``
+  | ``string`` | ``to`` | ``true`` | ``var``
+  | ``void`` | ``while`` |  | 
 
 The symbols used in Grammar are the following:
   | : | , | [ | ]
@@ -74,6 +75,7 @@ All other symbols are terminals.
   |  |  **|**  | ``[`` //[Value]// ``]`` 
   |  |  **|**  | ``<|`` //[Value]// ``|>`` 
   |  |  **|**  | ``{`` //[Map]// ``}`` 
+  |  |  **|**  | ``nil`` 
   | //Exp2// | -> | //Call// 
   |  |  **|**  | //Ident// 
   |  |  **|**  | //Integer// 
@@ -105,9 +107,9 @@ All other symbols are terminals.
   |  |  **|**  | ``error`` 
   |  |  **|**  | ``string`` 
   |  |  **|**  | ``[`` //Type// ``]`` 
-  |  |  **|**  | ``{`` //Type// ``,`` //Type// ``}`` 
+  |  |  **|**  | ``{`` //Type// ``:`` //Type// ``}`` 
   |  |  **|**  | ``<|`` //[Type]// ``|>`` 
-  |  |  **|**  | //Type// ``->`` //Type// 
+  |  |  **|**  | //Type// ``->`` //Ret// 
   | //[Type]// | -> | //Type// 
   |  |  **|**  | //Type// ``,`` //[Type]// 
   | //Ret// | -> | ``void`` 
@@ -121,11 +123,12 @@ All other symbols are terminals.
   |  |  **|**  | //Ident// 
   | //Call// | -> | //Ident// ``(`` //[Value]// ``)`` 
   |  |  **|**  | //Ident// ``.`` //Ident// ``(`` //[Value]// ``)`` 
-  | //Value// | -> | //Exp// 
-  |  |  **|**  | //BExp// 
-  |  |  **|**  | //Literal// 
+  | //Value// | -> | //Literal// 
+  |  |  **|**  | //Ident// 
+  |  |  **|**  | //Func// 
   |  |  **|**  | //Func// ``(`` //[Value]// ``)`` 
-  |  |  **|**  | ``(`` //[Param]// ``)`` ``=>`` //Ret// ``{`` //[Stmt]// ``}`` 
+  |  |  **|**  | //Exp// 
+  |  |  **|**  | //BExp// 
   | //[Value]// | -> | **eps**
   |  |  **|**  | //Value// 
   |  |  **|**  | //Value// ``,`` //[Value]// 
@@ -149,6 +152,7 @@ All other symbols are terminals.
   |  |  **|**  | ``for`` //Ident// ``=`` //Integer// ``to`` //Integer// ``{`` //[Stmt]// ``}`` 
   |  |  **|**  | ``return`` //Value// 
   |  |  **|**  | ``defer`` //Call// 
+  |  |  **|**  | ``print`` //Value// 
   | //[Stmt]// | -> | **eps**
   |  |  **|**  | //Stmt// ``;`` //[Stmt]// 
 
