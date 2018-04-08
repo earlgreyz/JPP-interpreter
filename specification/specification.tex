@@ -1,0 +1,118 @@
+\documentclass{article}
+
+\usepackage{listings}
+
+\begin{document}
+\section{Variables}
+
+\subsection{Definition and Assignment}
+Let $T$ represent a type \textbf{Annotation} and let $name$ be a variable
+identifier. Assuming that type of $value$ matches $T$, $value$ can be one of:
+\begin{itemize}
+  \setlength\itemsep{.1em}
+  \item a value literal
+  \item a variable/function identifier
+  \item a function call
+  \item an expression
+  \item a boolean expression
+\end{itemize}
+
+\texttt{var $name$ $T$;} --- will declare a variable $name$ of type $T$ and assign
+it a default value for type $T$.
+
+\texttt{var $name$ $T$ = $value$; } --- will declare a variable $name$ of type $T$
+and assign it a value of $value$.
+
+\texttt{$name$ = $value$;} --- will assign a value of $value$ to the variable
+$name$, where $value$
+
+\subsection{Types}
+
+\subsubsection{Basic types}
+
+\begin{table}[h]
+\centering
+\label{primitive-types}
+\begin{tabular}{|l|l|l|l|l|} \hline
+\textbf{Type} & \textbf{Annotation} & \textbf{Value literal}               & \textbf{Default} & \textbf{Example}   \\ \hline
+Integer       & \texttt{int}        & \texttt{-?\textbackslash d+}         & \texttt{0}       & \texttt{-42}       \\ \hline
+String        & \texttt{string}     & \texttt{"(\textbackslash c - '"')*"} & \texttt{""}      & \texttt{"example"} \\ \hline
+Error         & \texttt{error}      & \texttt{`(\textbackslash c - '`')*`} & \texttt{``}      & \texttt{`example`} \\ \hline
+Boolean       & \texttt{bool}       & \texttt{(true|false)}                & \texttt{false}   & \texttt{true}      \\ \hline
+\end{tabular}
+\caption{Primitive types}
+\end{table}
+
+\subsubsection{Container types}
+$T$ represents a type \textbf{Annotation}. $t$ represents a \textbf{Value}
+expression for the type~$T$.
+
+\begin{table}[h]
+\centering
+\label{container-types}
+\begin{tabular}{|l|l|l|l|l|} \hline
+\textbf{Type} & \textbf{Annotation}                   & \textbf{Value literal}                      & \textbf{Default} \\ \hline
+Array         & \texttt{[$T$]}                        & \texttt{[($t$(, $t$)*)?]}                   & \texttt{[]}      \\ \hline
+Map           & \texttt{\{$T_1$:$T_2$\}}              & \texttt{\{($t_1$:$t_2$(, $t_1$:$t_2$)*)?\}} & \texttt{\{\}}    \\ \hline
+Tuple         & \texttt{<|$T_1$, $T_2$, ..., $T_k$|>} & \texttt{<|$t_1$, $t_2$, ..., $t_k$|>}       & \texttt{*}       \\ \hline
+\end{tabular}
+\caption{Container types}
+\end{table}
+
+* --- Default tuple has all its fields filled with the default values for the
+inner types.
+
+\paragraph{Array examples}
+\texttt{var arr [int];} \\
+\texttt{var arr [int] = [0];} \\
+\texttt{var arr [int] = [0, 42];} \\
+\texttt{var arr [string] = ["this", "is", "an", "example"];}
+
+\paragraph{Map examples}
+\texttt{var map \{string: int\}; }\\
+\texttt{var map \{string: int\} = \{"example": 0\};} \\
+\texttt{var map \{string: int\} = \{"an": 0, "example": 1\};} \\
+\texttt{var map \{int: int\} = \{1: 0, 42: 1\};}
+
+\paragraph{Tuple examples}
+\texttt{var tuple <|int, int|>;} \\
+\texttt{var tuple <|string, int, int|> = <|"example", 2, 42|>;} \\
+\texttt{var tuple <|int, string, int, int|> = <|-2, "example", 1, 2|>;} \\
+\texttt{var tuple <|int, <|int, int|>|> = <|-2, <|1, 2|>|>;}
+
+\subsubsection{Function type}
+$T$ represents a type \textbf{Annotation} and $R$ = $T \cup { \texttt{void} }$.
+
+\begin{table}[h]
+\centering
+\label{function-type}
+\begin{tabular}{|l|l|l|l|} \hline
+\textbf{Type} & \textbf{Annotation}  & \textbf{Value literal} & \textbf{Default} \\ \hline
+Function      & \texttt{$T$ -> $R$ } & \texttt{*}             & \texttt{nil}     \\ \hline
+\end{tabular}
+\caption{Function type}
+\end{table}
+
+\paragraph{*Lambda functions}
+Lambda functions follow the syntax: \\
+\texttt{LAMBDA ::= ([PARAM]) => $R$ \{ [STMT] \}}.\\
+\texttt{PARAM ::= IDENT TYPE} and \texttt{[PARAM]} is a comma separated list of
+\texttt{PARAM}. \\
+\texttt{[STMT]} is a function body (a list of statements).
+
+A \texttt{nil} function cannot be executed and trying to do so will result
+in a \texttt{Runtime Error}.
+
+\paragraph{Lambda function examples}
+\texttt{var lambda int -> int;} \\
+\texttt{var lambda int -> int = (x int) => int \{ return x * 2; \};} \\
+\texttt{var lambda int -> <|int, int|> = (x int) => <|int, int|> \{ \\
+  \hspace*{2em} return <|x, x|>; \\
+\};} \\
+\texttt{var lambda <|int, int|> -> int = (x int, y int) => int \{ \\
+  \hspace*{2em} return x + y; \\
+\};} \\
+\texttt{var lambda [string] -> string = nil;}
+
+
+\end{document}
