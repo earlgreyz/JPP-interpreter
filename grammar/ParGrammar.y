@@ -39,25 +39,26 @@ import ErrM
   'and' { PT _ (TS _ 24) }
   'bool' { PT _ (TS _ 25) }
   'defer' { PT _ (TS _ 26) }
-  'else' { PT _ (TS _ 27) }
-  'error' { PT _ (TS _ 28) }
-  'false' { PT _ (TS _ 29) }
-  'for' { PT _ (TS _ 30) }
-  'func' { PT _ (TS _ 31) }
-  'if' { PT _ (TS _ 32) }
-  'int' { PT _ (TS _ 33) }
-  'not' { PT _ (TS _ 34) }
-  'or' { PT _ (TS _ 35) }
-  'return' { PT _ (TS _ 36) }
-  'string' { PT _ (TS _ 37) }
-  'to' { PT _ (TS _ 38) }
-  'true' { PT _ (TS _ 39) }
-  'var' { PT _ (TS _ 40) }
-  'void' { PT _ (TS _ 41) }
-  'while' { PT _ (TS _ 42) }
-  '{' { PT _ (TS _ 43) }
-  '|>' { PT _ (TS _ 44) }
-  '}' { PT _ (TS _ 45) }
+  'elif' { PT _ (TS _ 27) }
+  'else' { PT _ (TS _ 28) }
+  'error' { PT _ (TS _ 29) }
+  'false' { PT _ (TS _ 30) }
+  'for' { PT _ (TS _ 31) }
+  'func' { PT _ (TS _ 32) }
+  'if' { PT _ (TS _ 33) }
+  'int' { PT _ (TS _ 34) }
+  'not' { PT _ (TS _ 35) }
+  'or' { PT _ (TS _ 36) }
+  'return' { PT _ (TS _ 37) }
+  'string' { PT _ (TS _ 38) }
+  'to' { PT _ (TS _ 39) }
+  'true' { PT _ (TS _ 40) }
+  'var' { PT _ (TS _ 41) }
+  'void' { PT _ (TS _ 42) }
+  'while' { PT _ (TS _ 43) }
+  '{' { PT _ (TS _ 44) }
+  '|>' { PT _ (TS _ 45) }
+  '}' { PT _ (TS _ 46) }
 
 L_integ  { PT _ (TI $$) }
 L_quoted { PT _ (TL $$) }
@@ -169,12 +170,18 @@ Decl :: { Decl }
 Decl : 'var' Ident Type { AbsGrammar.DVar $2 $3 }
      | 'var' Ident Type '=' Value { AbsGrammar.DVarI $2 $3 $5 }
      | 'func' Ident '(' ListParam ')' '->' Ret '{' ListStmt '}' { AbsGrammar.DFunc $2 $4 $7 (reverse $9) }
+Elif :: { Elif }
+Elif : 'elif' BExp '{' ListStmt '}' { AbsGrammar.EElif $2 (reverse $4) }
+ListElif :: { [Elif] }
+ListElif : {- empty -} { [] } | ListElif Elif { flip (:) $1 $2 }
+Else :: { Else }
+Else : 'else' '{' ListStmt '}' { AbsGrammar.EElse (reverse $3) }
 Stmt :: { Stmt }
 Stmt : Decl { AbsGrammar.SDecl $1 }
      | ListVar '=' Value { AbsGrammar.SAssign $1 $3 }
      | Call { AbsGrammar.SCall $1 }
-     | 'if' BExp '{' ListStmt '}' { AbsGrammar.SIf $2 (reverse $4) }
-     | 'if' BExp '{' ListStmt '}' 'else' '{' ListStmt '}' { AbsGrammar.SIfelse $2 (reverse $4) (reverse $8) }
+     | 'if' BExp '{' ListStmt '}' ListElif { AbsGrammar.SIf $2 (reverse $4) (reverse $6) }
+     | 'if' BExp '{' ListStmt '}' ListElif Else { AbsGrammar.SIfelse $2 (reverse $4) (reverse $6) $7 }
      | 'while' BExp '{' ListStmt '}' { AbsGrammar.SWhile $2 (reverse $4) }
      | 'for' Ident '=' Integer 'to' Integer '{' ListStmt '}' { AbsGrammar.SFor $2 $4 $6 (reverse $8) }
      | 'return' Value { AbsGrammar.SReturn $2 }

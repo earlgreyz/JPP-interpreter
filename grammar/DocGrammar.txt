@@ -36,11 +36,11 @@ Error literals are recognized by the regular expression
 The set of reserved words is the set of terminals appearing in the grammar. Those reserved words that consist of non-letter characters are called symbols, and they are treated in a different way from those that are similar to identifiers. The lexer follows rules familiar from languages like Haskell, C, and Java, including longest match and spacing conventions.
 
 The reserved words used in Grammar are the following:
-  | ``and`` | ``bool`` | ``defer`` | ``else``
-  | ``error`` | ``false`` | ``for`` | ``func``
-  | ``if`` | ``int`` | ``not`` | ``or``
-  | ``return`` | ``string`` | ``to`` | ``true``
-  | ``var`` | ``void`` | ``while`` | 
+  | ``and`` | ``bool`` | ``defer`` | ``elif``
+  | ``else`` | ``error`` | ``false`` | ``for``
+  | ``func`` | ``if`` | ``int`` | ``not``
+  | ``or`` | ``return`` | ``string`` | ``to``
+  | ``true`` | ``var`` | ``void`` | ``while``
 
 The symbols used in Grammar are the following:
   | : | , | [ | ]
@@ -136,11 +136,15 @@ All other symbols are terminals.
   | //Decl// | -> | ``var`` //Ident// //Type// 
   |  |  **|**  | ``var`` //Ident// //Type// ``=`` //Value// 
   |  |  **|**  | ``func`` //Ident// ``(`` //[Param]// ``)`` ``->`` //Ret// ``{`` //[Stmt]// ``}`` 
+  | //Elif// | -> | ``elif`` //BExp// ``{`` //[Stmt]// ``}`` 
+  | //[Elif]// | -> | **eps**
+  |  |  **|**  | //Elif// //[Elif]// 
+  | //Else// | -> | ``else`` ``{`` //[Stmt]// ``}`` 
   | //Stmt// | -> | //Decl// 
   |  |  **|**  | //[Var]// ``=`` //Value// 
   |  |  **|**  | //Call// 
-  |  |  **|**  | ``if`` //BExp// ``{`` //[Stmt]// ``}`` 
-  |  |  **|**  | ``if`` //BExp// ``{`` //[Stmt]// ``}`` ``else`` ``{`` //[Stmt]// ``}`` 
+  |  |  **|**  | ``if`` //BExp// ``{`` //[Stmt]// ``}`` //[Elif]// 
+  |  |  **|**  | ``if`` //BExp// ``{`` //[Stmt]// ``}`` //[Elif]// //Else// 
   |  |  **|**  | ``while`` //BExp// ``{`` //[Stmt]// ``}`` 
   |  |  **|**  | ``for`` //Ident// ``=`` //Integer// ``to`` //Integer// ``{`` //[Stmt]// ``}`` 
   |  |  **|**  | ``return`` //Value// 

@@ -93,12 +93,18 @@ data Decl
     | DFunc Ident [Param] Ret [Stmt]
   deriving (Eq, Ord, Show, Read)
 
+data Elif = EElif BExp [Stmt]
+  deriving (Eq, Ord, Show, Read)
+
+data Else = EElse [Stmt]
+  deriving (Eq, Ord, Show, Read)
+
 data Stmt
     = SDecl Decl
     | SAssign [Var] Value
     | SCall Call
-    | SIf BExp [Stmt]
-    | SIfelse BExp [Stmt] [Stmt]
+    | SIf BExp [Stmt] [Elif]
+    | SIfelse BExp [Stmt] [Elif] Else
     | SWhile BExp [Stmt]
     | SFor Ident Integer Integer [Stmt]
     | SReturn Value

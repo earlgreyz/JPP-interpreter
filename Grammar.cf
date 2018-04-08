@@ -91,14 +91,19 @@ DVar.     Decl  ::= "var" Ident Type ;
 DVarI.    Decl  ::= "var" Ident Type "=" Value ;
 DFunc.    Decl  ::= "func" Ident "(" [Param] ")" "->" Ret "{" [Stmt] "}" ;
 
+EElif.    Elif  ::= "elif" BExp "{" [Stmt] "}" ;
+separator Elif "" ;
+EElse.    Else  ::= "else" "{" [Stmt] "}" ;
+
 {- Statements -}
 SDecl.    Stmt  ::= Decl ;
 SAssign.  Stmt  ::= [Var] "=" Value ;
 SCall.    Stmt  ::= Call ;
-SIf.      Stmt  ::= "if" BExp "{" [Stmt] "}" ;
-SIfelse.  Stmt  ::= "if" BExp "{" [Stmt] "}" "else" "{" [Stmt] "}" ;
+SIf.      Stmt  ::= "if" BExp "{" [Stmt] "}" [Elif];
+SIfelse.  Stmt  ::= "if" BExp "{" [Stmt] "}" [Elif] Else ;
 SWhile.   Stmt  ::= "while" BExp "{" [Stmt] "}" ;
 SFor.     Stmt  ::= "for" Ident "=" Integer "to" Integer "{" [Stmt] "}" ;
 SReturn.  Stmt  ::= "return" Value ;
 SDefer.   Stmt  ::= "defer" Call ;
+SPrint.   Stmt  ::= "print" Value ;
 terminator Stmt ";" ;

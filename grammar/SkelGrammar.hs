@@ -98,13 +98,19 @@ transDecl x = case x of
   DVar ident type_ -> failure x
   DVarI ident type_ value -> failure x
   DFunc ident params ret stmts -> failure x
+transElif :: Elif -> Result
+transElif x = case x of
+  EElif bexp stmts -> failure x
+transElse :: Else -> Result
+transElse x = case x of
+  EElse stmts -> failure x
 transStmt :: Stmt -> Result
 transStmt x = case x of
   SDecl decl -> failure x
   SAssign vars value -> failure x
   SCall call -> failure x
-  SIf bexp stmts -> failure x
-  SIfelse bexp stmts1 stmts2 -> failure x
+  SIf bexp stmts elifs -> failure x
+  SIfelse bexp stmts elifs else_ -> failure x
   SWhile bexp stmts -> failure x
   SFor ident integer1 integer2 stmts -> failure x
   SReturn value -> failure x

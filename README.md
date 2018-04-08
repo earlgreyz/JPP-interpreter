@@ -74,8 +74,10 @@ y = 3
 ```
 if b then {
 
-} else {
+} elif {
 
+} else {
+  
 }
 ```
 

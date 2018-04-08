@@ -77,11 +77,11 @@ data Call = CFun Ident [Value] | CMet Ident Ident [Value]
   deriving (Eq, Ord, Show, Read)
 
 data Value
-    = VLit Literal
+    = VExp Exp
+    | VBExp BExp
+    | VLit Literal
     | VCall Func [Value]
     | VLambda [Param] Ret [Stmt]
-    | VExp Exp
-    | VBExp BExp
   deriving (Eq, Ord, Show, Read)
 
 data Var = VVar Ident
@@ -93,12 +93,18 @@ data Decl
     | DFunc Ident [Param] Ret [Stmt]
   deriving (Eq, Ord, Show, Read)
 
+data Elif = EElif BExp [Stmt]
+  deriving (Eq, Ord, Show, Read)
+
+data Else = EElse [Stmt]
+  deriving (Eq, Ord, Show, Read)
+
 data Stmt
     = SDecl Decl
     | SAssign [Var] Value
     | SCall Call
     | SIf BExp [Stmt]
-    | SIfelse BExp [Stmt] [Stmt]
+    | SIfelse BExp [Stmt] [Elif] Else
     | SWhile BExp [Stmt]
     | SFor Ident Integer Integer [Stmt]
     | SReturn Value

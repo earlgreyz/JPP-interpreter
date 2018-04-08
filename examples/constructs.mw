@@ -36,6 +36,21 @@ if x < 10 {
   y = 4;
 };
 
+if x < 10 {
+  y = 2;
+} elif x < 20 {
+  y = 4;
+};
+
+
+if x < 10 {
+  y = 2;
+} elif x < 20 {
+  y = 4;
+} else {
+  y = 5;
+};
+
 // Loops
 while x and 2 < 3 {
   x = x + 1;

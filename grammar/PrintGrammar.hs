@@ -193,13 +193,22 @@ instance Print Decl where
     DVarI id type_ value -> prPrec i 0 (concatD [doc (showString "var"), prt 0 id, prt 0 type_, doc (showString "="), prt 0 value])
     DFunc id params ret stmts -> prPrec i 0 (concatD [doc (showString "func"), prt 0 id, doc (showString "("), prt 0 params, doc (showString ")"), doc (showString "->"), prt 0 ret, doc (showString "{"), prt 0 stmts, doc (showString "}")])
 
+instance Print Elif where
+  prt i e = case e of
+    EElif bexp stmts -> prPrec i 0 (concatD [doc (showString "elif"), prt 0 bexp, doc (showString "{"), prt 0 stmts, doc (showString "}")])
+  prtList _ [] = (concatD [])
+  prtList _ (x:xs) = (concatD [prt 0 x, prt 0 xs])
+instance Print Else where
+  prt i e = case e of
+    EElse stmts -> prPrec i 0 (concatD [doc (showString "else"), doc (showString "{"), prt 0 stmts, doc (showString "}")])
+
 instance Print Stmt where
   prt i e = case e of
     SDecl decl -> prPrec i 0 (concatD [prt 0 decl])
     SAssign vars value -> prPrec i 0 (concatD [prt 0 vars, doc (showString "="), prt 0 value])
     SCall call -> prPrec i 0 (concatD [prt 0 call])
-    SIf bexp stmts -> prPrec i 0 (concatD [doc (showString "if"), prt 0 bexp, doc (showString "{"), prt 0 stmts, doc (showString "}")])
-    SIfelse bexp stmts1 stmts2 -> prPrec i 0 (concatD [doc (showString "if"), prt 0 bexp, doc (showString "{"), prt 0 stmts1, doc (showString "}"), doc (showString "else"), doc (showString "{"), prt 0 stmts2, doc (showString "}")])
+    SIf bexp stmts elifs -> prPrec i 0 (concatD [doc (showString "if"), prt 0 bexp, doc (showString "{"), prt 0 stmts, doc (showString "}"), prt 0 elifs])
+    SIfelse bexp stmts elifs else_ -> prPrec i 0 (concatD [doc (showString "if"), prt 0 bexp, doc (showString "{"), prt 0 stmts, doc (showString "}"), prt 0 elifs, prt 0 else_])
     SWhile bexp stmts -> prPrec i 0 (concatD [doc (showString "while"), prt 0 bexp, doc (showString "{"), prt 0 stmts, doc (showString "}")])
     SFor id n1 n2 stmts -> prPrec i 0 (concatD [doc (showString "for"), prt 0 id, doc (showString "="), prt 0 n1, doc (showString "to"), prt 0 n2, doc (showString "{"), prt 0 stmts, doc (showString "}")])
     SReturn value -> prPrec i 0 (concatD [doc (showString "return"), prt 0 value])
