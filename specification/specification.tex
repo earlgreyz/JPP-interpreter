@@ -12,10 +12,10 @@ Assuming that type of $value$ matches $T$, $value$ can be one of:
 \begin{itemize}
   \setlength\itemsep{.1em}
   \item a value literal
-  \item a variable/function identifier
+  \item a variable
   \item a function call
-  \item an expression
-  \item a boolean expression
+  \item an arithmetic expression (if $T$ is \texttt{int})
+  \item a boolean expression (if $T$ is \texttt{bool})
 \end{itemize}
 
 \texttt{var $ident$ $T$;} --- will declare a variable $ident$ of type~$T$ and
