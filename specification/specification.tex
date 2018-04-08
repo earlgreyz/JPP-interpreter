@@ -4,6 +4,7 @@
 
 \begin{document}
 \section{Definitions and Assignments}
+\label{def}
 Let $T$ represent a type \textbf{Annotation} and let $ident$ be an identifier.
 
 \subsection{Variables}
@@ -39,9 +40,6 @@ $ident$.
 \texttt{func $ident$($p_1$ $T_1$, ..., $p_k$ $T_k$) -> $R$ \{ [STMT] \}} --- will
 define a function $ident$ with $k$ parameters, a return type $R$ and a body
 \texttt{[STMT]}.
-
-Parameters are passed to the function by value. In order for a variable to be
-passed by reference a type Annotation may be preceded with a \texttt{\&} sign.
 
 \subsection{Types}
 
@@ -97,38 +95,6 @@ inner types.
 \texttt{var tuple <|int, string, int, int|> = <|-2, "example", 1, 2|>;} \\
 \texttt{var tuple <|int, <|int, int|>|> = <|-2, <|1, 2|>|>;}
 
-\subsubsection{Function type}
-$T$ represents a type \textbf{Annotation} and $R$ = $T \cup { \texttt{void} }$.
-
-\begin{table}[h]
-\centering
-\label{function-type}
-\begin{tabular}{|l|l|l|l|} \hline
-\textbf{Type} & \textbf{Annotation}  & \textbf{Value literal} & \textbf{Default} \\ \hline
-Function      & \texttt{$T$ -> $R$ } & \texttt{*}             & \texttt{nil}     \\ \hline
-\end{tabular}
-\caption{Function type}
-\end{table}
-
-\paragraph{*Lambda functions}
-Lambda functions follow the syntax (uses the same assumptions as in \ref{def-functions}):
-
-\texttt{($p_1$ $T_1$, ..., $p_k$ $T_k$) => $R$ \{ [STMT] \}}
-
-\texttt{nil} function is a special value indicating no function. It cannot be
-executed and trying to do so will result in a \texttt{Runtime Error}.
-
-\paragraph{Lambda function examples}
-\texttt{var lambda int -> int;} \\
-\texttt{var lambda int -> int = (x int) => int \{ return x * 2; \};} \\
-\texttt{var lambda int -> <|int, int|> = (x int) => <|int, int|> \{ \\
-  \hspace*{2em} return <|x, x|>; \\
-\};} \\
-\texttt{var lambda int -> int -> int = (x int, y int) => int \{ \\
-  \hspace*{2em} return x + y; \\
-\};} \\
-\texttt{var lambda [string] -> string = nil;}
-
 \section{Expressions}
 
 \subsection{Arithmetic expressions}
@@ -140,8 +106,7 @@ expressions can have side effects (a function call).
 \texttt{2} \\
 \texttt{2 + 4 * (4 + 1)} \\
 \texttt{2 + x * (y - 1)} \\
-\texttt{2 + power(x, 2)} \\
-\texttt{2 + (x int) => int \{ return x * x; \}(5) }
+\texttt{2 + power(x, 2)}
 
 \subsection{Boolean expressions}
 Supports standard boolean operations $and, or, not, ()$, arithmetic expressions
@@ -153,7 +118,74 @@ return type is a \texttt{bool}). Boolean expressions can have side effects
 \texttt{true} \\
 \texttt{true or (true and false)} \\
 \texttt{(p and not q) or isEven(x)} \\
-\texttt{x / 2 == 3 or x < 10} \\
-\texttt{(x int) => bool \{ return x \%2 == 1; \}(5) }
+\texttt{x / 2 == 3 or x < 10}
+
+\section{Statements}
+All statements must end with a \texttt{;} symbol. We will use \texttt{[STMT]} to
+designate a non empty list of statements.
+
+\subsection{Definitions and assignments}
+As described in \ref{def}.
+
+\subsection{Conditional execution}
+Let $B_i$ be a boolean expression.
+
+\paragraph{IF}
+Conditional instruction must start with an \texttt{if} block \\
+\texttt{if $B_0$ \{ \\
+  \hspace*{2em} [STMT] \\
+\};}
+
+\paragraph{ELIF}
+Which may be followed by multiple (0 or more) \texttt{elif} blocks \\
+\texttt{if $B_0$ \{ \\
+  \hspace*{2em} [STMT] \\
+\} elif $B_1$ \{ \\
+  \hspace*{2em} [STMT] \\
+\} elif ... \{ \\
+  \hspace*{2em} [STMT] \\
+\};}
+
+\paragraph{ELSE}
+And an optional \texttt{else} block \\
+\texttt{if $B_0$ \{ \\
+  \hspace*{2em} [STMT] \\
+\} else \{ \\
+  \hspace*{2em} [STMT] \\
+\};}
+
+\subsection{While loop}
+Standard \texttt{while} with \texttt{break} and \texttt{continue} instructions: \\
+\texttt{while x < 50 \{ \\
+  \hspace*{2em} [STMT] \\
+\};}
+
+\subsection{Function calls}
+Functions can be called like \texttt{isEven(x)}. Types also have builtin
+methods which can be called like \texttt{x.ToString()} or \texttt{arr.Length()}.
+
+\subsection{Return}
+Functions can return value with \texttt{return} keyword.
+
+\subsection{Print}
+An instructions which prints given value to the screen.
+
+\section{Summary}
+Language satisfies the following requirements (24points):
+\begin{itemize}
+  \item multiple types (1.)
+  \item expressions (2.)
+  \item while, if..elif..else (3.)
+  \item functions with recrusion (4.)
+  \item print (5.)
+  \item string and type conversion functions (6c.) expressions side-efects (6d.)
+  \item static typing (7.)
+  \item static variable binding (8.)
+  \item runtime errors (9.)
+  \item functions with return values (10.)
+  \item arrays (11b.), maps (11c.)
+  \item function nesting (12.)
+  \item tuples (11d.), break-continue (11e.)
+\end{itemize}
 
 \end{document}

@@ -26,7 +26,6 @@ data Literal
     | LArr [Value]
     | LTup [Value]
     | LMap [Map]
-    | LFun
   deriving (Eq, Ord, Show, Read)
 
 data Exp
@@ -62,28 +61,19 @@ data Type
     | TArray Type
     | TMap Type Type
     | TTuple [Type]
-    | TFunc Type Ret
   deriving (Eq, Ord, Show, Read)
 
 data Ret = RVoid | RType Type
   deriving (Eq, Ord, Show, Read)
 
-data Param = PVal Ident Type | PRef Ident Type
-  deriving (Eq, Ord, Show, Read)
-
-data Func = FLambda [Param] Ret [Stmt] | FFunc Ident
+data Param = PVal Ident Type
   deriving (Eq, Ord, Show, Read)
 
 data Call = CFun Ident [Value] | CMet Ident Ident [Value]
   deriving (Eq, Ord, Show, Read)
 
 data Value
-    = VLit Literal
-    | VVar Ident
-    | VFunc Func
-    | VCall Func [Value]
-    | VExp Exp
-    | VBExp BExp
+    = VLit Literal | VVar Ident | VCall Call | VExp Exp | VBExp BExp
   deriving (Eq, Ord, Show, Read)
 
 data Var = AVar Ident
@@ -108,9 +98,7 @@ data Stmt
     | SIf BExp [Stmt] [Elif]
     | SIfelse BExp [Stmt] [Elif] Else
     | SWhile BExp [Stmt]
-    | SFor Ident Integer Integer [Stmt]
     | SReturn Value
-    | SDefer Call
     | SPrint Value
   deriving (Eq, Ord, Show, Read)
 

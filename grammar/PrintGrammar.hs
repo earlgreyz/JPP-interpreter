@@ -111,7 +111,6 @@ instance Print Literal where
     LArr values -> prPrec i 0 (concatD [doc (showString "["), prt 0 values, doc (showString "]")])
     LTup values -> prPrec i 0 (concatD [doc (showString "<|"), prt 0 values, doc (showString "|>")])
     LMap maps -> prPrec i 0 (concatD [doc (showString "{"), prt 0 maps, doc (showString "}")])
-    LFun -> prPrec i 0 (concatD [doc (showString "nil")])
 
 instance Print Exp where
   prt i e = case e of
@@ -147,7 +146,6 @@ instance Print Type where
     TArray type_ -> prPrec i 0 (concatD [doc (showString "["), prt 0 type_, doc (showString "]")])
     TMap type_1 type_2 -> prPrec i 0 (concatD [doc (showString "{"), prt 0 type_1, doc (showString ":"), prt 0 type_2, doc (showString "}")])
     TTuple types -> prPrec i 0 (concatD [doc (showString "<|"), prt 0 types, doc (showString "|>")])
-    TFunc type_ ret -> prPrec i 0 (concatD [prt 0 type_, doc (showString "->"), prt 0 ret])
   prtList _ [x] = (concatD [prt 0 x])
   prtList _ (x:xs) = (concatD [prt 0 x, doc (showString ","), prt 0 xs])
 instance Print Ret where
@@ -158,15 +156,9 @@ instance Print Ret where
 instance Print Param where
   prt i e = case e of
     PVal id type_ -> prPrec i 0 (concatD [prt 0 id, prt 0 type_])
-    PRef id type_ -> prPrec i 0 (concatD [prt 0 id, doc (showString "&"), prt 0 type_])
   prtList _ [] = (concatD [])
   prtList _ [x] = (concatD [prt 0 x])
   prtList _ (x:xs) = (concatD [prt 0 x, doc (showString ","), prt 0 xs])
-instance Print Func where
-  prt i e = case e of
-    FLambda params ret stmts -> prPrec i 0 (concatD [doc (showString "("), prt 0 params, doc (showString ")"), doc (showString "=>"), prt 0 ret, doc (showString "{"), prt 0 stmts, doc (showString "}")])
-    FFunc id -> prPrec i 0 (concatD [prt 0 id])
-
 instance Print Call where
   prt i e = case e of
     CFun id values -> prPrec i 0 (concatD [prt 0 id, doc (showString "("), prt 0 values, doc (showString ")")])
@@ -176,8 +168,7 @@ instance Print Value where
   prt i e = case e of
     VLit literal -> prPrec i 0 (concatD [prt 0 literal])
     VVar id -> prPrec i 0 (concatD [prt 0 id])
-    VFunc func -> prPrec i 0 (concatD [prt 0 func])
-    VCall func values -> prPrec i 0 (concatD [prt 0 func, doc (showString "("), prt 0 values, doc (showString ")")])
+    VCall call -> prPrec i 0 (concatD [prt 0 call])
     VExp exp -> prPrec i 0 (concatD [prt 0 exp])
     VBExp bexp -> prPrec i 0 (concatD [prt 0 bexp])
   prtList _ [] = (concatD [])
@@ -212,9 +203,7 @@ instance Print Stmt where
     SIf bexp stmts elifs -> prPrec i 0 (concatD [doc (showString "if"), prt 0 bexp, doc (showString "{"), prt 0 stmts, doc (showString "}"), prt 0 elifs])
     SIfelse bexp stmts elifs else_ -> prPrec i 0 (concatD [doc (showString "if"), prt 0 bexp, doc (showString "{"), prt 0 stmts, doc (showString "}"), prt 0 elifs, prt 0 else_])
     SWhile bexp stmts -> prPrec i 0 (concatD [doc (showString "while"), prt 0 bexp, doc (showString "{"), prt 0 stmts, doc (showString "}")])
-    SFor id n1 n2 stmts -> prPrec i 0 (concatD [doc (showString "for"), prt 0 id, doc (showString "="), prt 0 n1, doc (showString "to"), prt 0 n2, doc (showString "{"), prt 0 stmts, doc (showString "}")])
     SReturn value -> prPrec i 0 (concatD [doc (showString "return"), prt 0 value])
-    SDefer call -> prPrec i 0 (concatD [doc (showString "defer"), prt 0 call])
     SPrint value -> prPrec i 0 (concatD [doc (showString "print"), prt 0 value])
   prtList _ [] = (concatD [])
   prtList _ (x:xs) = (concatD [prt 0 x, doc (showString ";"), prt 0 xs])

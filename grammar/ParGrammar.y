@@ -14,53 +14,47 @@ import ErrM
 %tokentype {Token}
 %token
   '%' { PT _ (TS _ 1) }
-  '&' { PT _ (TS _ 2) }
-  '(' { PT _ (TS _ 3) }
-  ')' { PT _ (TS _ 4) }
-  '*' { PT _ (TS _ 5) }
-  '+' { PT _ (TS _ 6) }
-  ',' { PT _ (TS _ 7) }
-  '-' { PT _ (TS _ 8) }
-  '->' { PT _ (TS _ 9) }
-  '.' { PT _ (TS _ 10) }
-  '/' { PT _ (TS _ 11) }
-  ':' { PT _ (TS _ 12) }
-  ';' { PT _ (TS _ 13) }
-  '<' { PT _ (TS _ 14) }
-  '<=' { PT _ (TS _ 15) }
-  '<|' { PT _ (TS _ 16) }
-  '=' { PT _ (TS _ 17) }
-  '==' { PT _ (TS _ 18) }
-  '=>' { PT _ (TS _ 19) }
-  '>' { PT _ (TS _ 20) }
-  '>=' { PT _ (TS _ 21) }
-  '[' { PT _ (TS _ 22) }
-  ']' { PT _ (TS _ 23) }
-  'and' { PT _ (TS _ 24) }
-  'bool' { PT _ (TS _ 25) }
-  'defer' { PT _ (TS _ 26) }
-  'elif' { PT _ (TS _ 27) }
-  'else' { PT _ (TS _ 28) }
-  'error' { PT _ (TS _ 29) }
-  'false' { PT _ (TS _ 30) }
-  'for' { PT _ (TS _ 31) }
-  'func' { PT _ (TS _ 32) }
-  'if' { PT _ (TS _ 33) }
-  'int' { PT _ (TS _ 34) }
-  'nil' { PT _ (TS _ 35) }
-  'not' { PT _ (TS _ 36) }
-  'or' { PT _ (TS _ 37) }
-  'print' { PT _ (TS _ 38) }
-  'return' { PT _ (TS _ 39) }
-  'string' { PT _ (TS _ 40) }
-  'to' { PT _ (TS _ 41) }
-  'true' { PT _ (TS _ 42) }
-  'var' { PT _ (TS _ 43) }
-  'void' { PT _ (TS _ 44) }
-  'while' { PT _ (TS _ 45) }
-  '{' { PT _ (TS _ 46) }
-  '|>' { PT _ (TS _ 47) }
-  '}' { PT _ (TS _ 48) }
+  '(' { PT _ (TS _ 2) }
+  ')' { PT _ (TS _ 3) }
+  '*' { PT _ (TS _ 4) }
+  '+' { PT _ (TS _ 5) }
+  ',' { PT _ (TS _ 6) }
+  '-' { PT _ (TS _ 7) }
+  '->' { PT _ (TS _ 8) }
+  '.' { PT _ (TS _ 9) }
+  '/' { PT _ (TS _ 10) }
+  ':' { PT _ (TS _ 11) }
+  ';' { PT _ (TS _ 12) }
+  '<' { PT _ (TS _ 13) }
+  '<=' { PT _ (TS _ 14) }
+  '<|' { PT _ (TS _ 15) }
+  '=' { PT _ (TS _ 16) }
+  '==' { PT _ (TS _ 17) }
+  '>' { PT _ (TS _ 18) }
+  '>=' { PT _ (TS _ 19) }
+  '[' { PT _ (TS _ 20) }
+  ']' { PT _ (TS _ 21) }
+  'and' { PT _ (TS _ 22) }
+  'bool' { PT _ (TS _ 23) }
+  'elif' { PT _ (TS _ 24) }
+  'else' { PT _ (TS _ 25) }
+  'error' { PT _ (TS _ 26) }
+  'false' { PT _ (TS _ 27) }
+  'func' { PT _ (TS _ 28) }
+  'if' { PT _ (TS _ 29) }
+  'int' { PT _ (TS _ 30) }
+  'not' { PT _ (TS _ 31) }
+  'or' { PT _ (TS _ 32) }
+  'print' { PT _ (TS _ 33) }
+  'return' { PT _ (TS _ 34) }
+  'string' { PT _ (TS _ 35) }
+  'true' { PT _ (TS _ 36) }
+  'var' { PT _ (TS _ 37) }
+  'void' { PT _ (TS _ 38) }
+  'while' { PT _ (TS _ 39) }
+  '{' { PT _ (TS _ 40) }
+  '|>' { PT _ (TS _ 41) }
+  '}' { PT _ (TS _ 42) }
 
 L_integ  { PT _ (TI $$) }
 L_quoted { PT _ (TL $$) }
@@ -94,7 +88,6 @@ Literal : Integer { AbsGrammar.LInt $1 }
         | '[' ListValue ']' { AbsGrammar.LArr $2 }
         | '<|' ListValue '|>' { AbsGrammar.LTup $2 }
         | '{' ListMap '}' { AbsGrammar.LMap $2 }
-        | 'nil' { AbsGrammar.LFun }
 Exp2 :: { Exp }
 Exp2 : Call { AbsGrammar.ECall $1 }
      | Ident { AbsGrammar.EVar $1 }
@@ -135,29 +128,23 @@ Type : 'int' { AbsGrammar.TInt }
      | '[' Type ']' { AbsGrammar.TArray $2 }
      | '{' Type ':' Type '}' { AbsGrammar.TMap $2 $4 }
      | '<|' ListType '|>' { AbsGrammar.TTuple $2 }
-     | Type '->' Ret { AbsGrammar.TFunc $1 $3 }
 ListType :: { [Type] }
 ListType : Type { (:[]) $1 } | Type ',' ListType { (:) $1 $3 }
 Ret :: { Ret }
 Ret : 'void' { AbsGrammar.RVoid } | Type { AbsGrammar.RType $1 }
 Param :: { Param }
 Param : Ident Type { AbsGrammar.PVal $1 $2 }
-      | Ident '&' Type { AbsGrammar.PRef $1 $3 }
 ListParam :: { [Param] }
 ListParam : {- empty -} { [] }
           | Param { (:[]) $1 }
           | Param ',' ListParam { (:) $1 $3 }
-Func :: { Func }
-Func : '(' ListParam ')' '=>' Ret '{' ListStmt '}' { AbsGrammar.FLambda $2 $5 (reverse $7) }
-     | Ident { AbsGrammar.FFunc $1 }
 Call :: { Call }
 Call : Ident '(' ListValue ')' { AbsGrammar.CFun $1 $3 }
      | Ident '.' Ident '(' ListValue ')' { AbsGrammar.CMet $1 $3 $5 }
 Value :: { Value }
 Value : Literal { AbsGrammar.VLit $1 }
       | Ident { AbsGrammar.VVar $1 }
-      | Func { AbsGrammar.VFunc $1 }
-      | Func '(' ListValue ')' { AbsGrammar.VCall $1 $3 }
+      | Call { AbsGrammar.VCall $1 }
       | Exp { AbsGrammar.VExp $1 }
       | BExp { AbsGrammar.VBExp $1 }
 ListValue :: { [Value] }
@@ -187,9 +174,7 @@ Stmt : Decl { AbsGrammar.SDecl $1 }
      | 'if' BExp '{' ListStmt '}' ListElif { AbsGrammar.SIf $2 (reverse $4) (reverse $6) }
      | 'if' BExp '{' ListStmt '}' ListElif Else { AbsGrammar.SIfelse $2 (reverse $4) (reverse $6) $7 }
      | 'while' BExp '{' ListStmt '}' { AbsGrammar.SWhile $2 (reverse $4) }
-     | 'for' Ident '=' Integer 'to' Integer '{' ListStmt '}' { AbsGrammar.SFor $2 $4 $6 (reverse $8) }
      | 'return' Value { AbsGrammar.SReturn $2 }
-     | 'defer' Call { AbsGrammar.SDefer $2 }
      | 'print' Value { AbsGrammar.SPrint $2 }
 ListStmt :: { [Stmt] }
 ListStmt : {- empty -} { [] }

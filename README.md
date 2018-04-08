@@ -77,7 +77,7 @@ if b then {
 } elif {
 
 } else {
-  
+
 }
 ```
 
@@ -129,28 +129,9 @@ func f(a int) -> <int, error> {
 }
 ```
 
-## Przekazywanie przez referencje
-```
-func f(a &int) -> int {
-  return 42
-}
-```
-
-## Lambda funkcje
-```
-(a int, b int) => int {
-  return a + b
-}
-```
-
 # Wbudowane funkcje
 ```
 print(s string)
 int.ToString() -> string
 string.ToInt() -> <int, error>
-```
-
-# Niestandardowa konstrukcja
-```
-defer fun(2)
 ```

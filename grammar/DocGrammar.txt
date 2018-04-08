@@ -36,11 +36,10 @@ Error literals are recognized by the regular expression
 The set of reserved words is the set of terminals appearing in the grammar. Those reserved words that consist of non-letter characters are called symbols, and they are treated in a different way from those that are similar to identifiers. The lexer follows rules familiar from languages like Haskell, C, and Java, including longest match and spacing conventions.
 
 The reserved words used in Grammar are the following:
-  | ``and`` | ``bool`` | ``defer`` | ``elif``
-  | ``else`` | ``error`` | ``false`` | ``for``
-  | ``func`` | ``if`` | ``int`` | ``nil``
-  | ``not`` | ``or`` | ``print`` | ``return``
-  | ``string`` | ``to`` | ``true`` | ``var``
+  | ``and`` | ``bool`` | ``elif`` | ``else``
+  | ``error`` | ``false`` | ``func`` | ``if``
+  | ``int`` | ``not`` | ``or`` | ``print``
+  | ``return`` | ``string`` | ``true`` | ``var``
   | ``void`` | ``while`` |  | 
 
 The symbols used in Grammar are the following:
@@ -49,8 +48,7 @@ The symbols used in Grammar are the following:
   | * | / | % | +
   | - | ( | ) | <
   | > | <= | >= | ==
-  | -> | & | => | .
-  | = | ; |  | 
+  | . | = | -> | ;
 
 ===Comments===
 Single-line comments begin with //.Multiple-line comments are  enclosed with /* and */.
@@ -75,7 +73,6 @@ All other symbols are terminals.
   |  |  **|**  | ``[`` //[Value]// ``]`` 
   |  |  **|**  | ``<|`` //[Value]// ``|>`` 
   |  |  **|**  | ``{`` //[Map]// ``}`` 
-  |  |  **|**  | ``nil`` 
   | //Exp2// | -> | //Call// 
   |  |  **|**  | //Ident// 
   |  |  **|**  | //Integer// 
@@ -109,24 +106,19 @@ All other symbols are terminals.
   |  |  **|**  | ``[`` //Type// ``]`` 
   |  |  **|**  | ``{`` //Type// ``:`` //Type// ``}`` 
   |  |  **|**  | ``<|`` //[Type]// ``|>`` 
-  |  |  **|**  | //Type// ``->`` //Ret// 
   | //[Type]// | -> | //Type// 
   |  |  **|**  | //Type// ``,`` //[Type]// 
   | //Ret// | -> | ``void`` 
   |  |  **|**  | //Type// 
   | //Param// | -> | //Ident// //Type// 
-  |  |  **|**  | //Ident// ``&`` //Type// 
   | //[Param]// | -> | **eps**
   |  |  **|**  | //Param// 
   |  |  **|**  | //Param// ``,`` //[Param]// 
-  | //Func// | -> | ``(`` //[Param]// ``)`` ``=>`` //Ret// ``{`` //[Stmt]// ``}`` 
-  |  |  **|**  | //Ident// 
   | //Call// | -> | //Ident// ``(`` //[Value]// ``)`` 
   |  |  **|**  | //Ident// ``.`` //Ident// ``(`` //[Value]// ``)`` 
   | //Value// | -> | //Literal// 
   |  |  **|**  | //Ident// 
-  |  |  **|**  | //Func// 
-  |  |  **|**  | //Func// ``(`` //[Value]// ``)`` 
+  |  |  **|**  | //Call// 
   |  |  **|**  | //Exp// 
   |  |  **|**  | //BExp// 
   | //[Value]// | -> | **eps**
@@ -149,9 +141,7 @@ All other symbols are terminals.
   |  |  **|**  | ``if`` //BExp// ``{`` //[Stmt]// ``}`` //[Elif]// 
   |  |  **|**  | ``if`` //BExp// ``{`` //[Stmt]// ``}`` //[Elif]// //Else// 
   |  |  **|**  | ``while`` //BExp// ``{`` //[Stmt]// ``}`` 
-  |  |  **|**  | ``for`` //Ident// ``=`` //Integer// ``to`` //Integer// ``{`` //[Stmt]// ``}`` 
   |  |  **|**  | ``return`` //Value// 
-  |  |  **|**  | ``defer`` //Call// 
   |  |  **|**  | ``print`` //Value// 
   | //[Stmt]// | -> | **eps**
   |  |  **|**  | //Stmt// ``;`` //[Stmt]// 
