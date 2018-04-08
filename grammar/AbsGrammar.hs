@@ -92,13 +92,15 @@ data Else = EElse [Stmt]
   deriving (Eq, Ord, Show, Read)
 
 data Stmt
-    = SDecl Decl
-    | SAssign [Var] Value
-    | SCall Call
+    = SReturn Value
+    | SPrint Value
+    | SDecl Decl
     | SIf BExp [Stmt] [Elif]
     | SIfelse BExp [Stmt] [Elif] Else
     | SWhile BExp [Stmt]
-    | SReturn Value
-    | SPrint Value
+    | SAssign [Var] Value
+    | SBreak
+    | SCont
+    | SCall Call
   deriving (Eq, Ord, Show, Read)
 

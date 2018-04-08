@@ -13,7 +13,7 @@ var str string = "2";
 var err error = `This is error message`;
 var array [int] = [2, 3];
 var map {string: int} = {"ala": 3, "ma": 2, "kota": 4};
-var tuple <| int, int, string |> = <|2, 3, "ala"|>;
+var tuple <|int, int, string|> = <|2, 3, "ala"|>;
 
 // If
 if fun(x, y) < 10 {
@@ -44,6 +44,11 @@ if x < 10 {
 // Loops
 while x and 2 < 3 {
   x = x + 1;
+  if x > 2 {
+    break;
+  } else {
+    continue;
+  };
 };
 
 // Tuple unpacking

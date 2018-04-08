@@ -197,14 +197,16 @@ instance Print Else where
 
 instance Print Stmt where
   prt i e = case e of
+    SReturn value -> prPrec i 0 (concatD [doc (showString "return"), prt 0 value])
+    SPrint value -> prPrec i 0 (concatD [doc (showString "print"), prt 0 value])
     SDecl decl -> prPrec i 0 (concatD [prt 0 decl])
-    SAssign vars value -> prPrec i 0 (concatD [prt 0 vars, doc (showString "="), prt 0 value])
-    SCall call -> prPrec i 0 (concatD [prt 0 call])
     SIf bexp stmts elifs -> prPrec i 0 (concatD [doc (showString "if"), prt 0 bexp, doc (showString "{"), prt 0 stmts, doc (showString "}"), prt 0 elifs])
     SIfelse bexp stmts elifs else_ -> prPrec i 0 (concatD [doc (showString "if"), prt 0 bexp, doc (showString "{"), prt 0 stmts, doc (showString "}"), prt 0 elifs, prt 0 else_])
     SWhile bexp stmts -> prPrec i 0 (concatD [doc (showString "while"), prt 0 bexp, doc (showString "{"), prt 0 stmts, doc (showString "}")])
-    SReturn value -> prPrec i 0 (concatD [doc (showString "return"), prt 0 value])
-    SPrint value -> prPrec i 0 (concatD [doc (showString "print"), prt 0 value])
+    SAssign vars value -> prPrec i 0 (concatD [prt 0 vars, doc (showString "="), prt 0 value])
+    SBreak -> prPrec i 0 (concatD [doc (showString "break")])
+    SCont -> prPrec i 0 (concatD [doc (showString "continue")])
+    SCall call -> prPrec i 0 (concatD [prt 0 call])
   prtList _ [] = (concatD [])
   prtList _ (x:xs) = (concatD [prt 0 x, doc (showString ";"), prt 0 xs])
 

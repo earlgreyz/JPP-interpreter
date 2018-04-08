@@ -6,7 +6,7 @@ Prog.  Program  ::= [Stmt] ;
 entrypoints Program ;
 
 {- Type literals -}
-token Error '`' ((char - ["\"\\"]) | ('\\' ["\"\\nt"]))* '`' ;
+token Error '`' ((char - ["`\\"]) | ('\\' ["`\\nt"]))* '`' ;
 
 BTrue.  Boolean  ::= "true" ;
 BFalse. Boolean  ::= "false" ;
@@ -92,12 +92,14 @@ separator Elif "" ;
 EElse.    Else  ::= "else" "{" [Stmt] "}" ;
 
 {- Statements -}
+SReturn.  Stmt  ::= "return" Value ;
+SPrint.   Stmt  ::= "print" Value ;
 SDecl.    Stmt  ::= Decl ;
-SAssign.  Stmt  ::= [Var] "=" Value ;
-SCall.    Stmt  ::= Call ;
 SIf.      Stmt  ::= "if" BExp "{" [Stmt] "}" [Elif];
 SIfelse.  Stmt  ::= "if" BExp "{" [Stmt] "}" [Elif] Else ;
 SWhile.   Stmt  ::= "while" BExp "{" [Stmt] "}" ;
-SReturn.  Stmt  ::= "return" Value ;
-SPrint.   Stmt  ::= "print" Value ;
+SAssign.  Stmt  ::= [Var] "=" Value ;
+SBreak.   Stmt  ::= "break" ;
+SCont.    Stmt  ::= "continue" ;
+SCall.    Stmt  ::= Call ;
 terminator Stmt ";" ;

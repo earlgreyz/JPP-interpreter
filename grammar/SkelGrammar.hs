@@ -100,12 +100,14 @@ transElse x = case x of
   EElse stmts -> failure x
 transStmt :: Stmt -> Result
 transStmt x = case x of
+  SReturn value -> failure x
+  SPrint value -> failure x
   SDecl decl -> failure x
-  SAssign vars value -> failure x
-  SCall call -> failure x
   SIf bexp stmts elifs -> failure x
   SIfelse bexp stmts elifs else_ -> failure x
   SWhile bexp stmts -> failure x
-  SReturn value -> failure x
-  SPrint value -> failure x
+  SAssign vars value -> failure x
+  SBreak -> failure x
+  SCont -> failure x
+  SCall call -> failure x
 

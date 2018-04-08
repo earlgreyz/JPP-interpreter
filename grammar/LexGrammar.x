@@ -29,7 +29,7 @@ $u = [\0-\255]          -- universal: any character
 
 $white+ ;
 @rsyms { tok (\p s -> PT p (eitherResIdent (TV . share) s)) }
-\` ($u # [\" \\]| \\ [\" \\ n t]) * \` { tok (\p s -> PT p (eitherResIdent (T_Error . share) s)) }
+\` ($u # [\` \\]| \\ [\` \\ n t]) * \` { tok (\p s -> PT p (eitherResIdent (T_Error . share) s)) }
 
 $l $i*   { tok (\p s -> PT p (eitherResIdent (TV . share) s)) }
 \" ([$u # [\" \\ \n]] | (\\ (\" | \\ | \' | n | t)))* \"{ tok (\p s -> PT p (TL $ share $ unescapeInitTail s)) }
@@ -101,7 +101,7 @@ eitherResIdent tv s = treeFind resWords
                               | s == a = t
 
 resWords :: BTree
-resWords = b "and" 22 (b ":" 11 (b "," 6 (b ")" 3 (b "(" 2 (b "%" 1 N N) N) (b "+" 5 (b "*" 4 N N) N)) (b "." 9 (b "->" 8 (b "-" 7 N N) N) (b "/" 10 N N))) (b "==" 17 (b "<=" 14 (b "<" 13 (b ";" 12 N N) N) (b "=" 16 (b "<|" 15 N N) N)) (b "[" 20 (b ">=" 19 (b ">" 18 N N) N) (b "]" 21 N N)))) (b "print" 33 (b "func" 28 (b "else" 25 (b "elif" 24 (b "bool" 23 N N) N) (b "false" 27 (b "error" 26 N N) N)) (b "not" 31 (b "int" 30 (b "if" 29 N N) N) (b "or" 32 N N))) (b "void" 38 (b "true" 36 (b "string" 35 (b "return" 34 N N) N) (b "var" 37 N N)) (b "|>" 41 (b "{" 40 (b "while" 39 N N) N) (b "}" 42 N N))))
+resWords = b "bool" 23 (b ";" 12 (b "," 6 (b ")" 3 (b "(" 2 (b "%" 1 N N) N) (b "+" 5 (b "*" 4 N N) N)) (b "." 9 (b "->" 8 (b "-" 7 N N) N) (b ":" 11 (b "/" 10 N N) N))) (b ">" 18 (b "<|" 15 (b "<=" 14 (b "<" 13 N N) N) (b "==" 17 (b "=" 16 N N) N)) (b "]" 21 (b "[" 20 (b ">=" 19 N N) N) (b "and" 22 N N)))) (b "or" 34 (b "false" 29 (b "elif" 26 (b "continue" 25 (b "break" 24 N N) N) (b "error" 28 (b "else" 27 N N) N)) (b "int" 32 (b "if" 31 (b "func" 30 N N) N) (b "not" 33 N N))) (b "void" 40 (b "string" 37 (b "return" 36 (b "print" 35 N N) N) (b "var" 39 (b "true" 38 N N) N)) (b "|>" 43 (b "{" 42 (b "while" 41 N N) N) (b "}" 44 N N))))
    where b s n = let bs = id s
                   in B bs (TS bs n)
 

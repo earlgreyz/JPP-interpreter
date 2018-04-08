@@ -36,25 +36,27 @@ import ErrM
   ']' { PT _ (TS _ 21) }
   'and' { PT _ (TS _ 22) }
   'bool' { PT _ (TS _ 23) }
-  'elif' { PT _ (TS _ 24) }
-  'else' { PT _ (TS _ 25) }
-  'error' { PT _ (TS _ 26) }
-  'false' { PT _ (TS _ 27) }
-  'func' { PT _ (TS _ 28) }
-  'if' { PT _ (TS _ 29) }
-  'int' { PT _ (TS _ 30) }
-  'not' { PT _ (TS _ 31) }
-  'or' { PT _ (TS _ 32) }
-  'print' { PT _ (TS _ 33) }
-  'return' { PT _ (TS _ 34) }
-  'string' { PT _ (TS _ 35) }
-  'true' { PT _ (TS _ 36) }
-  'var' { PT _ (TS _ 37) }
-  'void' { PT _ (TS _ 38) }
-  'while' { PT _ (TS _ 39) }
-  '{' { PT _ (TS _ 40) }
-  '|>' { PT _ (TS _ 41) }
-  '}' { PT _ (TS _ 42) }
+  'break' { PT _ (TS _ 24) }
+  'continue' { PT _ (TS _ 25) }
+  'elif' { PT _ (TS _ 26) }
+  'else' { PT _ (TS _ 27) }
+  'error' { PT _ (TS _ 28) }
+  'false' { PT _ (TS _ 29) }
+  'func' { PT _ (TS _ 30) }
+  'if' { PT _ (TS _ 31) }
+  'int' { PT _ (TS _ 32) }
+  'not' { PT _ (TS _ 33) }
+  'or' { PT _ (TS _ 34) }
+  'print' { PT _ (TS _ 35) }
+  'return' { PT _ (TS _ 36) }
+  'string' { PT _ (TS _ 37) }
+  'true' { PT _ (TS _ 38) }
+  'var' { PT _ (TS _ 39) }
+  'void' { PT _ (TS _ 40) }
+  'while' { PT _ (TS _ 41) }
+  '{' { PT _ (TS _ 42) }
+  '|>' { PT _ (TS _ 43) }
+  '}' { PT _ (TS _ 44) }
 
 L_integ  { PT _ (TI $$) }
 L_quoted { PT _ (TL $$) }
@@ -168,14 +170,16 @@ ListElif : {- empty -} { [] } | ListElif Elif { flip (:) $1 $2 }
 Else :: { Else }
 Else : 'else' '{' ListStmt '}' { AbsGrammar.EElse (reverse $3) }
 Stmt :: { Stmt }
-Stmt : Decl { AbsGrammar.SDecl $1 }
-     | ListVar '=' Value { AbsGrammar.SAssign $1 $3 }
-     | Call { AbsGrammar.SCall $1 }
+Stmt : 'return' Value { AbsGrammar.SReturn $2 }
+     | 'print' Value { AbsGrammar.SPrint $2 }
+     | Decl { AbsGrammar.SDecl $1 }
      | 'if' BExp '{' ListStmt '}' ListElif { AbsGrammar.SIf $2 (reverse $4) (reverse $6) }
      | 'if' BExp '{' ListStmt '}' ListElif Else { AbsGrammar.SIfelse $2 (reverse $4) (reverse $6) $7 }
      | 'while' BExp '{' ListStmt '}' { AbsGrammar.SWhile $2 (reverse $4) }
-     | 'return' Value { AbsGrammar.SReturn $2 }
-     | 'print' Value { AbsGrammar.SPrint $2 }
+     | ListVar '=' Value { AbsGrammar.SAssign $1 $3 }
+     | 'break' { AbsGrammar.SBreak }
+     | 'continue' { AbsGrammar.SCont }
+     | Call { AbsGrammar.SCall $1 }
 ListStmt :: { [Stmt] }
 ListStmt : {- empty -} { [] }
          | ListStmt Stmt ';' { flip (:) $1 $2 }

@@ -1,0 +1,48 @@
+var intDefault int;
+var boolDefault bool;
+var stringDefault string;
+var errorDefault error;
+var arrayDefault [int];
+var mapDefault {string: int};
+var tupleDefault <|int, int, string|>;
+
+intAssigned = 42;
+boolAssigned = true;
+stringAssigned = "example string";
+errorAssigned = `example error`;
+arrayAssigned = [42, 3];
+mapAssigned = {"example": 0, "map": 1};
+tupleAssigned = <|3, 14, "pi"|>;
+
+var intAssigned int = 42;
+var boolAssigned bool = true;
+var stringAssigned string = "example string";
+var errorAssigned error = `example error`;
+var arrayAssigned [int] = [42, 3];
+var mapAssigned {string: int} = {"example": 0, "map": 1};
+var tupleAssigned <|int, int, string|> = <|3, 14, "pi"|>;
+
+func noParamsNoRet () -> void {
+  var a int;
+};
+
+func noParamsRet () -> int {
+  return 42;
+};
+
+func oneParamNoRet (x int) -> void {
+  print x;
+};
+
+func oneParamRet (x int) -> <|int, int|> {
+  return <|x, x|>;
+};
+
+func multipleParamNoRet (x int, y string) -> void {
+  print x;
+  print y;
+};
+
+func multipleParamRet (x int, y string) -> <|int, string|> {
+  return <|x, y|>;
+};
