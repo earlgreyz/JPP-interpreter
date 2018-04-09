@@ -2,12 +2,174 @@
 
 \usepackage{listings}
 
+\title{The Language Grammar}
+\author{Mikolaj Walczak}
+
 \begin{document}
-\section{Definitions and Assignments}
+\maketitle
+\clearpage
+
+\section{The lexical structure of Grammar}
+
+\subsection{Identifiers}
+
+Identifiers \textit{Ident} are unquoted strings beginning with a letter,
+followed by any combination of letters, digits, and the characters \texttt{\_ '}
+reserved words excluded.
+
+\subsection{Literals}
+
+Integer literals \textit{Integer} are nonempty sequences of digits.
+
+String literals \textit{String} have the form
+\texttt{"}\textit{x}\texttt{"}\}, where \textit{x} is any sequence of any characters
+except \texttt{"} unless preceded by \texttt{$\backslash$}.
+
+Error literals \textit{Error} have the form
+\texttt{`}\textit{x}\texttt{`}\}, where \textit{x} is any sequence of any characters
+except \texttt{`} unless preceded by \texttt{$\backslash$}.
+
+\subsection{Reserved words and symbols}
+
+The set of reserved words is the set of terminals appearing in the grammar.
+Those reserved words that consist of non-letter characters are called symbols,
+and they are treated in a different way from those that are similar to
+identifiers. The lexer follows rules familiar from languages like Haskell,
+C, and Java, including longest match and spacing conventions.
+
+The reserved words used in Grammar are the following:
+
+\begin{center}\begin{tabular}{llll}
+\texttt{and} & \texttt{bool} & \texttt{break} & \texttt{continue} \\
+\texttt{elif} & \texttt{else} & \texttt{error} & \texttt{false} \\
+\texttt{func} & \texttt{if} & \texttt{int} & \texttt{not} \\
+\texttt{or} & \texttt{print} & \texttt{return} & \texttt{string} \\
+\texttt{true} & \texttt{var} & \texttt{void} & \texttt{while} \\
+\end{tabular}\end{center}
+
+The symbols used in Grammar are the following:
+
+\begin{center}\begin{tabular}{llll}
+: & , & [ & ] \\
+$<$$|$ & $|$$>$ & \{ & \} \\
+* & / & \% & + \\
+- & ( & ) & $<$ \\
+$>$ & $<$= & $>$= & == \\
+. & = & -$>$ & ; \\
+\end{tabular}\end{center}
+
+\subsection{Comments}
+
+Single-line comments begin with //.Multiple-line comments are  enclosed with /* and */.
+
+\section{The syntactic structure of Grammar}
+
+Non-terminals are enclosed between $<$ and $>$.
+The symbols -$>$ (production),  \textbf{$|$}  (union)
+and \textbf{eps} (empty rule) belong to the BNF notation.
+All other symbols are terminals. \\
+
+\begin{tabular}{lll}
+\textit{Program} & -$>$ & \textit{[Stmt]} \\
+\textit{Boolean} & -$>$ & \texttt{true} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \texttt{false} \\
+\textit{Map} & -$>$ & \textit{Value} \texttt{:} \textit{Value} \\
+\textit{[Map]} & -$>$ & \textbf{eps} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \textit{Map} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \textit{Map} \texttt{,} \textit{[Map]} \\
+\textit{Literal} & -$>$ & \textit{Integer} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \textit{Boolean} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \textit{String} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \textit{Error} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \texttt{[} \textit{[Value]} \texttt{]} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \texttt{$<$$|$} \textit{[Value]} \texttt{$|$$>$} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \texttt{\{} \textit{[Map]} \texttt{\}} \\
+\textit{Exp2} & -$>$ & \textit{Call} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \textit{Ident} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \textit{Integer} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \texttt{(} \textit{Exp} \texttt{)} \\
+\textit{Exp1} & -$>$ & \textit{Exp1} \texttt{*} \textit{Exp2} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \textit{Exp1} \texttt{/} \textit{Exp2} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \textit{Exp1} \texttt{\%} \textit{Exp2} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \textit{Exp2} \\
+\textit{Exp} & -$>$ & \textit{Exp} \texttt{+} \textit{Exp1} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \textit{Exp} \texttt{-} \textit{Exp1} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \textit{Exp1} \\
+\textit{BExp3} & -$>$ & \textit{Call} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \textit{Ident} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \textit{Boolean} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \texttt{(} \textit{BExp} \texttt{)} \\
+\textit{BExp2} & -$>$ & \textit{Exp} \texttt{$<$} \textit{Exp} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \textit{Exp} \texttt{$>$} \textit{Exp} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \textit{Exp} \texttt{$<$=} \textit{Exp} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \textit{Exp} \texttt{$>$=} \textit{Exp} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \textit{Exp} \texttt{==} \textit{Exp} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \textit{BExp3} \\
+\textit{BExp1} & -$>$ & \texttt{not} \textit{BExp} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \textit{BExp2} \\
+\textit{BExp} & -$>$ & \textit{BExp} \texttt{and} \textit{BExp1} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \textit{BExp} \texttt{or} \textit{BExp1} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \textit{BExp1} \\
+\end{tabular}
+
+\begin{tabular}{lll}
+\textit{Type} & -$>$ & \texttt{int} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \texttt{bool} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \texttt{error} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \texttt{string} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \texttt{[} \textit{Type} \texttt{]} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \texttt{\{} \textit{Type} \texttt{:} \textit{Type} \texttt{\}} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \texttt{$<$$|$} \textit{[Type]} \texttt{$|$$>$} \\
+\textit{[Type]} & -$>$ & \textit{Type} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \textit{Type} \texttt{,} \textit{[Type]} \\
+\textit{Ret} & -$>$ & \texttt{void} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \textit{Type} \\
+\textit{Param} & -$>$ & \textit{Ident} \textit{Type} \\
+\textit{[Param]} & -$>$ & \textbf{eps} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \textit{Param} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \textit{Param} \texttt{,} \textit{[Param]} \\
+\textit{Call} & -$>$ & \textit{Ident} \texttt{(} \textit{[Value]} \texttt{)} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \textit{Ident} \texttt{.} \textit{Ident} \texttt{(} \textit{[Value]} \texttt{)} \\
+\textit{Value} & -$>$ & \textit{Literal} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \textit{Ident} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \textit{Call} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \textit{Exp} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \textit{BExp} \\
+\textit{[Value]} & -$>$ & \textbf{eps} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \textit{Value} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \textit{Value} \texttt{,} \textit{[Value]} \\
+\textit{Var} & -$>$ & \textit{Ident} \\
+\textit{[Var]} & -$>$ & \textbf{eps} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \textit{Var} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \textit{Var} \texttt{,} \textit{[Var]} \\
+\textit{Decl} & -$>$ & \texttt{var} \textit{Ident} \textit{Type} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \texttt{var} \textit{Ident} \textit{Type} \texttt{=} \textit{Value} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \texttt{func} \textit{Ident} \texttt{(} \textit{[Param]} \texttt{)} \texttt{-$>$} \textit{Ret} \texttt{\{} \textit{[Stmt]} \texttt{\}} \\
+\textit{Elif} & -$>$ & \texttt{elif} \textit{BExp} \texttt{\{} \textit{[Stmt]} \texttt{\}} \\
+\textit{[Elif]} & -$>$ & \textbf{eps} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \textit{Elif} \textit{[Elif]} \\
+\textit{Else} & -$>$ & \texttt{else} \texttt{\{} \textit{[Stmt]} \texttt{\}} \\
+\textit{Stmt} & -$>$ & \texttt{return} \textit{Value} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \texttt{print} \textit{Value} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \textit{Decl} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \texttt{if} \textit{BExp} \texttt{\{} \textit{[Stmt]} \texttt{\}} \textit{[Elif]} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \texttt{if} \textit{BExp} \texttt{\{} \textit{[Stmt]} \texttt{\}} \textit{[Elif]} \textit{Else} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \texttt{while} \textit{BExp} \texttt{\{} \textit{[Stmt]} \texttt{\}} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \textit{[Var]} \texttt{=} \textit{Value} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \texttt{break} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \texttt{continue} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \textit{Call} \\
+\textit{[Stmt]} & -$>$ & \textbf{eps} \\
+ & \multicolumn{1}{c}{\textbf{$|$}} & \textit{Stmt} \texttt{;} \textit{[Stmt]} \\
+\end{tabular}
+
+\section{Language description}
+
+\subsection{Definitions and Assignments}
 \label{def}
 Let $T$ represent a type \textbf{Annotation} and let $ident$ be an identifier.
 
-\subsection{Variables}
+\subsubsection{Variables}
 Assuming that type of $value$ matches $T$, $value$ can be one of:
 \begin{itemize}
   \setlength\itemsep{.1em}
@@ -27,7 +189,7 @@ type~$T$ and assign it a value of $value$.
 \texttt{$ident$ = $value$;} --- will assign a value of $value$ to the variable
 $ident$.
 
-\subsection{Functions}
+\subsubsection{Functions}
 \label{def-functions}
 \begin{itemize}
   \setlength\itemsep{.1em}
@@ -40,8 +202,6 @@ $ident$.
 \texttt{func $ident$($p_1$ $T_1$, ..., $p_k$ $T_k$) -> $R$ \{ [STMT] \}} --- will
 define a function $ident$ with $k$ parameters, a return type $R$ and a body
 \texttt{[STMT]}.
-
-\subsection{Types}
 
 \subsubsection{Basic types}
 
@@ -95,9 +255,9 @@ inner types.
 \texttt{var tuple <|int, string, int, int|> = <|-2, "example", 1, 2|>;} \\
 \texttt{var tuple <|int, <|int, int|>|> = <|-2, <|1, 2|>|>;}
 
-\section{Expressions}
+\subsection{Expressions}
 
-\subsection{Arithmetic expressions}
+\subsubsection{Arithmetic expressions}
 Supports standard arithmetic operations $+, -, *, /, \%, ()$ as well as
 variables and function calls (if the return type is an \texttt{int}). Arithmetic
 expressions can have side effects (a function call).
@@ -108,7 +268,7 @@ expressions can have side effects (a function call).
 \texttt{2 + x * (y - 1)} \\
 \texttt{2 + power(x, 2)}
 
-\subsection{Boolean expressions}
+\subsubsection{Boolean expressions}
 Supports standard boolean operations $and, or, not, ()$, arithmetic expressions
 comparison $<, >, <=, >=, ==$ as well as variables and function calls (if the
 return type is a \texttt{bool}). Boolean expressions can have side effects
@@ -120,14 +280,14 @@ return type is a \texttt{bool}). Boolean expressions can have side effects
 \texttt{(p and not q) or isEven(x)} \\
 \texttt{x / 2 == 3 or x < 10}
 
-\section{Statements}
+\subsection{Statements}
 All statements must end with a \texttt{;} symbol. We will use \texttt{[STMT]} to
 designate a non empty list of statements.
 
-\subsection{Definitions and assignments}
+\subsubsection{Definitions and assignments}
 As described in \ref{def}.
 
-\subsection{Conditional execution}
+\subsubsection{Conditional execution}
 Let $B_i$ be a boolean expression.
 
 \paragraph{IF}
@@ -154,20 +314,20 @@ And an optional \texttt{else} block \\
   \hspace*{2em} [STMT] \\
 \};}
 
-\subsection{While loop}
+\subsubsection{While loop}
 Standard \texttt{while} with \texttt{break} and \texttt{continue} instructions: \\
 \texttt{while x < 50 \{ \\
   \hspace*{2em} [STMT] \\
 \};}
 
-\subsection{Function calls}
+\subsubsection{Function calls}
 Functions can be called like \texttt{isEven(x)}. Types also have builtin
 methods which can be called like \texttt{x.ToString()} or \texttt{arr.Length()}.
 
-\subsection{Return}
+\subsubsection{Return}
 Functions can return value with \texttt{return} keyword.
 
-\subsection{Print}
+\subsubsection{Print}
 An instructions which prints given value to the screen.
 
 \section{Summary}
