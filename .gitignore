@@ -1,0 +1,15 @@
+# MacOS
+**/.DS_Store
+
+# Latex
+specification/*.aux
+specification/*.fdb_latexmk
+specification/*.fls
+specification/*.log
+specification/*.pdf
+specification/*.synctex.gz
+
+# BNFC
+grammar/TestGrammar
+grammar/*.hi
+grammar/*.o

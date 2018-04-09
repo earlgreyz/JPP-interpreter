@@ -27,16 +27,13 @@ func fib1(n int) -> <|int, error|> {
 func fib2(n int) -> <|int, error|> {
   var last int = 1;
   var current int = 1;
-  var tmp int;
 
   if n < 0 {
     return <|0, `n must be greater than 0`|>;
   };
 
   while (n > 0) {
-    tmp = current;
-    current = current + last;
-    last = tmp;
+    current, last = <|current + last, current|>;
     n = n - 1;
   };
 
