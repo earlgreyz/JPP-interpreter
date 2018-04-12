@@ -1,4 +1,11 @@
 var x int = 2 + 3 * 4;
-print x;
-x = x - 2 * 3;
-print x;
+
+if x < 20 {
+  var y bool = false;
+  print y;
+  print "x < 20";
+} elif x < 30
+  print "x < 30"
+else
+  print "x >= 30"
+endif;

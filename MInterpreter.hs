@@ -11,8 +11,6 @@ import AbsGrammar
 returnLocation :: Loc
 returnLocation = (-1, TInt)
 
--- type Function = [Variable] -> Interpreter Variable
-
 data Variable =
   VInt Integer
   | VBool Bool
@@ -31,8 +29,8 @@ instance Eq Variable where
 instance Show Variable where
   show (VInt n) = show n
   show (VBool b) = show b
-  show (VString s) = "`" ++ show s ++ "`"
-  show (VError e) = "\"" ++ show e ++ "\""
+  show (VString s) = "\"" ++ s ++ "\""
+  show (VError e) = "`" ++ e ++ "`"
   show (VArray xs) = "[" ++ stringify xs ++ "]" where
     stringify :: [Variable] -> String
     stringify [] = []
@@ -132,8 +130,16 @@ execStmt (SReturn r) = case r of
 execStmt (SPrint e) = do
   value <- evalExp e
   liftIO . putStrLn . show $ value
-execStmt (SIf b s es) = throwError $ "Not implemented yet." -- TODO: implement
-execStmt (SIfelse b s es e) = throwError $ "Not implemented yet." -- TODO: implement
+execStmt (SIf b s es) = do
+  cond <- evalBool b
+  if cond then execStmt s else case es of
+    [] -> return ()
+    (EElif b' s'):t -> execStmt (SIf b' s' t)
+execStmt (SIfelse b s es e) = do
+  cond <- evalBool b
+  if cond then execStmt s else case es of
+    [] -> execStmt e
+    (EElif b' s'):t -> execStmt (SIfelse b' s' t e)
 execStmt (SWhile b s) = throwError $ "Not implemented yet." -- TODO: implement
 execStmt SBreak = throwError $ "Not implemented yet." -- TODO: implement
 execStmt SCont = throwError $ "Not implemented yet." -- TODO: implement

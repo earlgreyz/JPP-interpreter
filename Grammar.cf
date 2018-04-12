@@ -86,7 +86,6 @@ separator Decl ";" ;
 {- Conditionals -}
 EElif.    Elif  ::= "elif" Exp Stmt ;
 separator Elif "" ;
-EElse.    Else  ::= "else" Stmt ;
 
 {- Statements -}
 SBlock.   Stmt  ::= "{" [Decl] [Stmt] "}";
@@ -95,7 +94,7 @@ SUnpack.  Stmt  ::= [Var] "<-" Exp ;
 SReturn.  Stmt  ::= "return" RVal ;
 SPrint.   Stmt  ::= "print" Exp ;
 SIf.      Stmt  ::= "if" Exp Stmt [Elif] "endif" ;
-SIfelse.  Stmt  ::= "if" Exp Stmt [Elif] Else "endif" ;
+SIfelse.  Stmt  ::= "if" Exp Stmt [Elif] "else" Stmt "endif" ;
 SWhile.   Stmt  ::= "while" Exp Stmt ;
 SBreak.   Stmt  ::= "break" ;
 SCont.    Stmt  ::= "continue" ;
