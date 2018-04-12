@@ -45,10 +45,11 @@ The reserved words used in Grammar are the following:
 The symbols used in Grammar are the following:
   | : | , | [ | ]
   | <| | |> | { | }
-  | * | / | % | +
-  | - | ( | ) | <
-  | > | <= | >= | ==
-  | . | = | -> | ;
+  | < | > | <= | >=
+  | == | * | / | %
+  | + | - | ( | )
+  | . | _ | = | ->
+  | ; |  |  | 
 
 ===Comments===
 Single-line comments begin with //.Multiple-line comments are  enclosed with /* and */.
@@ -62,7 +63,7 @@ All other symbols are terminals.
   | //Program// | -> | //[Stmt]// 
   | //Boolean// | -> | ``true`` 
   |  |  **|**  | ``false`` 
-  | //Map// | -> | //Value// ``:`` //Value// 
+  | //Map// | -> | //Exp// ``:`` //Exp// 
   | //[Map]// | -> | **eps**
   |  |  **|**  | //Map// 
   |  |  **|**  | //Map// ``,`` //[Map]// 
@@ -70,35 +71,39 @@ All other symbols are terminals.
   |  |  **|**  | //Boolean// 
   |  |  **|**  | //String// 
   |  |  **|**  | //Error// 
-  |  |  **|**  | ``[`` //[Value]// ``]`` 
-  |  |  **|**  | ``<|`` //[Value]// ``|>`` 
+  |  |  **|**  | ``[`` //[Exp]// ``]`` 
+  |  |  **|**  | ``<|`` //[Exp]// ``|>`` 
   |  |  **|**  | ``{`` //[Map]// ``}`` 
-  | //Exp2// | -> | //Call// 
+  | //Comp// | -> | ``<`` 
+  |  |  **|**  | ``>`` 
+  |  |  **|**  | ``<=`` 
+  |  |  **|**  | ``>=`` 
+  |  |  **|**  | ``==`` 
+  | //BOp// | -> | ``and`` 
+  |  |  **|**  | ``or`` 
+  | //Exp6// | -> | //Call// 
   |  |  **|**  | //Ident// 
-  |  |  **|**  | //Integer// 
+  |  |  **|**  | //Literal// 
   |  |  **|**  | ``(`` //Exp// ``)`` 
-  | //Exp1// | -> | //Exp1// ``*`` //Exp2// 
-  |  |  **|**  | //Exp1// ``/`` //Exp2// 
-  |  |  **|**  | //Exp1// ``%`` //Exp2// 
+  | //Exp5// | -> | //Exp5// ``*`` //Exp6// 
+  |  |  **|**  | //Exp5// ``/`` //Exp6// 
+  |  |  **|**  | //Exp5// ``%`` //Exp6// 
+  |  |  **|**  | //Exp6// 
+  | //Exp4// | -> | //Exp4// ``+`` //Exp5// 
+  |  |  **|**  | //Exp4// ``-`` //Exp5// 
+  |  |  **|**  | //Exp5// 
+  | //Exp3// | -> | //Exp3// //Comp// //Exp4// 
+  |  |  **|**  | //Exp4// 
+  | //Exp2// | -> | ``not`` //Exp3// 
+  |  |  **|**  | //Exp3// 
+  | //Exp1// | -> | //Exp1// //BOp// //Exp2// 
   |  |  **|**  | //Exp2// 
-  | //Exp// | -> | //Exp// ``+`` //Exp1// 
-  |  |  **|**  | //Exp// ``-`` //Exp1// 
-  |  |  **|**  | //Exp1// 
-  | //BExp3// | -> | //Call// 
-  |  |  **|**  | //Ident// 
-  |  |  **|**  | //Boolean// 
-  |  |  **|**  | ``(`` //BExp// ``)`` 
-  | //BExp2// | -> | //Exp// ``<`` //Exp// 
-  |  |  **|**  | //Exp// ``>`` //Exp// 
-  |  |  **|**  | //Exp// ``<=`` //Exp// 
-  |  |  **|**  | //Exp// ``>=`` //Exp// 
-  |  |  **|**  | //Exp// ``==`` //Exp// 
-  |  |  **|**  | //BExp3// 
-  | //BExp1// | -> | ``not`` //BExp// 
-  |  |  **|**  | //BExp2// 
-  | //BExp// | -> | //BExp// ``and`` //BExp1// 
-  |  |  **|**  | //BExp// ``or`` //BExp1// 
-  |  |  **|**  | //BExp1// 
+  | //Exp// | -> | //Exp1// 
+  | //[Exp]// | -> | **eps**
+  |  |  **|**  | //Exp// 
+  |  |  **|**  | //Exp// ``,`` //[Exp]// 
+  | //Call// | -> | //Ident// ``(`` //[Exp]// ``)`` 
+  |  |  **|**  | //Ident// ``.`` //Ident// ``(`` //[Exp]// ``)`` 
   | //Type// | -> | ``int`` 
   |  |  **|**  | ``bool`` 
   |  |  **|**  | ``error`` 
@@ -110,38 +115,29 @@ All other symbols are terminals.
   |  |  **|**  | //Type// ``,`` //[Type]// 
   | //Ret// | -> | ``void`` 
   |  |  **|**  | //Type// 
+  | //RVal// | -> | //Exp// 
+  |  |  **|**  | ``_`` 
   | //Param// | -> | //Ident// //Type// 
   | //[Param]// | -> | **eps**
   |  |  **|**  | //Param// 
   |  |  **|**  | //Param// ``,`` //[Param]// 
-  | //Call// | -> | //Ident// ``(`` //[Value]// ``)`` 
-  |  |  **|**  | //Ident// ``.`` //Ident// ``(`` //[Value]// ``)`` 
-  | //Value// | -> | //Literal// 
-  |  |  **|**  | //Ident// 
-  |  |  **|**  | //Call// 
-  |  |  **|**  | //Exp// 
-  |  |  **|**  | //BExp// 
-  | //[Value]// | -> | **eps**
-  |  |  **|**  | //Value// 
-  |  |  **|**  | //Value// ``,`` //[Value]// 
   | //Var// | -> | //Ident// 
   | //[Var]// | -> | **eps**
   |  |  **|**  | //Var// 
   |  |  **|**  | //Var// ``,`` //[Var]// 
-  | //Decl// | -> | ``var`` //Ident// //Type// 
-  |  |  **|**  | ``var`` //Ident// //Type// ``=`` //Value// 
+  | //Decl// | -> | ``var`` //Ident// //Type// ``=`` //Exp// 
   |  |  **|**  | ``func`` //Ident// ``(`` //[Param]// ``)`` ``->`` //Ret// ``{`` //[Stmt]// ``}`` 
-  | //Elif// | -> | ``elif`` //BExp// ``{`` //[Stmt]// ``}`` 
+  | //Elif// | -> | ``elif`` //Exp// ``{`` //[Stmt]// ``}`` 
   | //[Elif]// | -> | **eps**
   |  |  **|**  | //Elif// //[Elif]// 
   | //Else// | -> | ``else`` ``{`` //[Stmt]// ``}`` 
-  | //Stmt// | -> | ``return`` //Value// 
-  |  |  **|**  | ``print`` //Value// 
+  | //Stmt// | -> | ``return`` //RVal// 
+  |  |  **|**  | ``print`` //Exp// 
   |  |  **|**  | //Decl// 
-  |  |  **|**  | ``if`` //BExp// ``{`` //[Stmt]// ``}`` //[Elif]// 
-  |  |  **|**  | ``if`` //BExp// ``{`` //[Stmt]// ``}`` //[Elif]// //Else// 
-  |  |  **|**  | ``while`` //BExp// ``{`` //[Stmt]// ``}`` 
-  |  |  **|**  | //[Var]// ``=`` //Value// 
+  |  |  **|**  | ``if`` //Exp// ``{`` //[Stmt]// ``}`` //[Elif]// 
+  |  |  **|**  | ``if`` //Exp// ``{`` //[Stmt]// ``}`` //[Elif]// //Else// 
+  |  |  **|**  | ``while`` //Exp// ``{`` //[Stmt]// ``}`` 
+  |  |  **|**  | //[Var]// ``=`` //Exp// 
   |  |  **|**  | ``break`` 
   |  |  **|**  | ``continue`` 
   |  |  **|**  | //Call// 

@@ -24,39 +24,44 @@ transBoolean x = case x of
   BFalse -> failure x
 transMap :: Map -> Result
 transMap x = case x of
-  MapKV value1 value2 -> failure x
+  MapKV exp1 exp2 -> failure x
 transLiteral :: Literal -> Result
 transLiteral x = case x of
   LInt integer -> failure x
   LBool boolean -> failure x
   LStr string -> failure x
   LErr error -> failure x
-  LArr values -> failure x
-  LTup values -> failure x
+  LArr exps -> failure x
+  LTup exps -> failure x
   LMap maps -> failure x
+transComp :: Comp -> Result
+transComp x = case x of
+  CLt -> failure x
+  CGt -> failure x
+  CLe -> failure x
+  CGe -> failure x
+  CEq -> failure x
+transBOp :: BOp -> Result
+transBOp x = case x of
+  BAnd -> failure x
+  BOr -> failure x
 transExp :: Exp -> Result
 transExp x = case x of
   ECall call -> failure x
   EVar ident -> failure x
-  EInt integer -> failure x
+  ELit literal -> failure x
   ETimes exp1 exp2 -> failure x
   EDiv exp1 exp2 -> failure x
   EMod exp1 exp2 -> failure x
   EPlus exp1 exp2 -> failure x
   EMinus exp1 exp2 -> failure x
-transBExp :: BExp -> Result
-transBExp x = case x of
-  BCall call -> failure x
-  BVar ident -> failure x
-  BBool boolean -> failure x
-  BLt exp1 exp2 -> failure x
-  BGt exp1 exp2 -> failure x
-  BLe exp1 exp2 -> failure x
-  BGe exp1 exp2 -> failure x
-  BEq exp1 exp2 -> failure x
-  BNot bexp -> failure x
-  BAnd bexp1 bexp2 -> failure x
-  BOr bexp1 bexp2 -> failure x
+  EComp exp1 comp exp2 -> failure x
+  ENot exp -> failure x
+  EBool exp1 bop exp2 -> failure x
+transCall :: Call -> Result
+transCall x = case x of
+  CFun ident exps -> failure x
+  CMet ident1 ident2 exps -> failure x
 transType :: Type -> Result
 transType x = case x of
   TInt -> failure x
@@ -70,43 +75,35 @@ transRet :: Ret -> Result
 transRet x = case x of
   RVoid -> failure x
   RType type_ -> failure x
+transRVal :: RVal -> Result
+transRVal x = case x of
+  RExp exp -> failure x
+  RNone -> failure x
 transParam :: Param -> Result
 transParam x = case x of
   PVal ident type_ -> failure x
-transCall :: Call -> Result
-transCall x = case x of
-  CFun ident values -> failure x
-  CMet ident1 ident2 values -> failure x
-transValue :: Value -> Result
-transValue x = case x of
-  VLit literal -> failure x
-  VVar ident -> failure x
-  VCall call -> failure x
-  VExp exp -> failure x
-  VBExp bexp -> failure x
 transVar :: Var -> Result
 transVar x = case x of
   AVar ident -> failure x
 transDecl :: Decl -> Result
 transDecl x = case x of
-  DVar ident type_ -> failure x
-  DVarI ident type_ value -> failure x
+  DVar ident type_ exp -> failure x
   DFunc ident params ret stmts -> failure x
 transElif :: Elif -> Result
 transElif x = case x of
-  EElif bexp stmts -> failure x
+  EElif exp stmts -> failure x
 transElse :: Else -> Result
 transElse x = case x of
   EElse stmts -> failure x
 transStmt :: Stmt -> Result
 transStmt x = case x of
-  SReturn value -> failure x
-  SPrint value -> failure x
+  SReturn rval -> failure x
+  SPrint exp -> failure x
   SDecl decl -> failure x
-  SIf bexp stmts elifs -> failure x
-  SIfelse bexp stmts elifs else_ -> failure x
-  SWhile bexp stmts -> failure x
-  SAssign vars value -> failure x
+  SIf exp stmts elifs -> failure x
+  SIfelse exp stmts elifs else_ -> failure x
+  SWhile exp stmts -> failure x
+  SAssign vars exp -> failure x
   SBreak -> failure x
   SCont -> failure x
   SCall call -> failure x

@@ -98,7 +98,7 @@ instance Print Boolean where
 
 instance Print Map where
   prt i e = case e of
-    MapKV value1 value2 -> prPrec i 0 (concatD [prt 0 value1, doc (showString ":"), prt 0 value2])
+    MapKV exp1 exp2 -> prPrec i 0 (concatD [prt 0 exp1, doc (showString ":"), prt 0 exp2])
   prtList _ [] = (concatD [])
   prtList _ [x] = (concatD [prt 0 x])
   prtList _ (x:xs) = (concatD [prt 0 x, doc (showString ","), prt 0 xs])
@@ -108,34 +108,43 @@ instance Print Literal where
     LBool boolean -> prPrec i 0 (concatD [prt 0 boolean])
     LStr str -> prPrec i 0 (concatD [prt 0 str])
     LErr error -> prPrec i 0 (concatD [prt 0 error])
-    LArr values -> prPrec i 0 (concatD [doc (showString "["), prt 0 values, doc (showString "]")])
-    LTup values -> prPrec i 0 (concatD [doc (showString "<|"), prt 0 values, doc (showString "|>")])
+    LArr exps -> prPrec i 0 (concatD [doc (showString "["), prt 0 exps, doc (showString "]")])
+    LTup exps -> prPrec i 0 (concatD [doc (showString "<|"), prt 0 exps, doc (showString "|>")])
     LMap maps -> prPrec i 0 (concatD [doc (showString "{"), prt 0 maps, doc (showString "}")])
+
+instance Print Comp where
+  prt i e = case e of
+    CLt -> prPrec i 0 (concatD [doc (showString "<")])
+    CGt -> prPrec i 0 (concatD [doc (showString ">")])
+    CLe -> prPrec i 0 (concatD [doc (showString "<=")])
+    CGe -> prPrec i 0 (concatD [doc (showString ">=")])
+    CEq -> prPrec i 0 (concatD [doc (showString "==")])
+
+instance Print BOp where
+  prt i e = case e of
+    BAnd -> prPrec i 0 (concatD [doc (showString "and")])
+    BOr -> prPrec i 0 (concatD [doc (showString "or")])
 
 instance Print Exp where
   prt i e = case e of
-    ECall call -> prPrec i 2 (concatD [prt 0 call])
-    EVar id -> prPrec i 2 (concatD [prt 0 id])
-    EInt n -> prPrec i 2 (concatD [prt 0 n])
-    ETimes exp1 exp2 -> prPrec i 1 (concatD [prt 1 exp1, doc (showString "*"), prt 2 exp2])
-    EDiv exp1 exp2 -> prPrec i 1 (concatD [prt 1 exp1, doc (showString "/"), prt 2 exp2])
-    EMod exp1 exp2 -> prPrec i 1 (concatD [prt 1 exp1, doc (showString "%"), prt 2 exp2])
-    EPlus exp1 exp2 -> prPrec i 0 (concatD [prt 0 exp1, doc (showString "+"), prt 1 exp2])
-    EMinus exp1 exp2 -> prPrec i 0 (concatD [prt 0 exp1, doc (showString "-"), prt 1 exp2])
-
-instance Print BExp where
+    ECall call -> prPrec i 6 (concatD [prt 0 call])
+    EVar id -> prPrec i 6 (concatD [prt 0 id])
+    ELit literal -> prPrec i 6 (concatD [prt 0 literal])
+    ETimes exp1 exp2 -> prPrec i 5 (concatD [prt 5 exp1, doc (showString "*"), prt 6 exp2])
+    EDiv exp1 exp2 -> prPrec i 5 (concatD [prt 5 exp1, doc (showString "/"), prt 6 exp2])
+    EMod exp1 exp2 -> prPrec i 5 (concatD [prt 5 exp1, doc (showString "%"), prt 6 exp2])
+    EPlus exp1 exp2 -> prPrec i 4 (concatD [prt 4 exp1, doc (showString "+"), prt 5 exp2])
+    EMinus exp1 exp2 -> prPrec i 4 (concatD [prt 4 exp1, doc (showString "-"), prt 5 exp2])
+    EComp exp1 comp exp2 -> prPrec i 3 (concatD [prt 3 exp1, prt 0 comp, prt 4 exp2])
+    ENot exp -> prPrec i 2 (concatD [doc (showString "not"), prt 3 exp])
+    EBool exp1 bop exp2 -> prPrec i 1 (concatD [prt 1 exp1, prt 0 bop, prt 2 exp2])
+  prtList _ [] = (concatD [])
+  prtList _ [x] = (concatD [prt 0 x])
+  prtList _ (x:xs) = (concatD [prt 0 x, doc (showString ","), prt 0 xs])
+instance Print Call where
   prt i e = case e of
-    BCall call -> prPrec i 3 (concatD [prt 0 call])
-    BVar id -> prPrec i 3 (concatD [prt 0 id])
-    BBool boolean -> prPrec i 3 (concatD [prt 0 boolean])
-    BLt exp1 exp2 -> prPrec i 2 (concatD [prt 0 exp1, doc (showString "<"), prt 0 exp2])
-    BGt exp1 exp2 -> prPrec i 2 (concatD [prt 0 exp1, doc (showString ">"), prt 0 exp2])
-    BLe exp1 exp2 -> prPrec i 2 (concatD [prt 0 exp1, doc (showString "<="), prt 0 exp2])
-    BGe exp1 exp2 -> prPrec i 2 (concatD [prt 0 exp1, doc (showString ">="), prt 0 exp2])
-    BEq exp1 exp2 -> prPrec i 2 (concatD [prt 0 exp1, doc (showString "=="), prt 0 exp2])
-    BNot bexp -> prPrec i 1 (concatD [doc (showString "not"), prt 0 bexp])
-    BAnd bexp1 bexp2 -> prPrec i 0 (concatD [prt 0 bexp1, doc (showString "and"), prt 1 bexp2])
-    BOr bexp1 bexp2 -> prPrec i 0 (concatD [prt 0 bexp1, doc (showString "or"), prt 1 bexp2])
+    CFun id exps -> prPrec i 0 (concatD [prt 0 id, doc (showString "("), prt 0 exps, doc (showString ")")])
+    CMet id1 id2 exps -> prPrec i 0 (concatD [prt 0 id1, doc (showString "."), prt 0 id2, doc (showString "("), prt 0 exps, doc (showString ")")])
 
 instance Print Type where
   prt i e = case e of
@@ -153,24 +162,14 @@ instance Print Ret where
     RVoid -> prPrec i 0 (concatD [doc (showString "void")])
     RType type_ -> prPrec i 0 (concatD [prt 0 type_])
 
+instance Print RVal where
+  prt i e = case e of
+    RExp exp -> prPrec i 0 (concatD [prt 0 exp])
+    RNone -> prPrec i 0 (concatD [doc (showString "_")])
+
 instance Print Param where
   prt i e = case e of
     PVal id type_ -> prPrec i 0 (concatD [prt 0 id, prt 0 type_])
-  prtList _ [] = (concatD [])
-  prtList _ [x] = (concatD [prt 0 x])
-  prtList _ (x:xs) = (concatD [prt 0 x, doc (showString ","), prt 0 xs])
-instance Print Call where
-  prt i e = case e of
-    CFun id values -> prPrec i 0 (concatD [prt 0 id, doc (showString "("), prt 0 values, doc (showString ")")])
-    CMet id1 id2 values -> prPrec i 0 (concatD [prt 0 id1, doc (showString "."), prt 0 id2, doc (showString "("), prt 0 values, doc (showString ")")])
-
-instance Print Value where
-  prt i e = case e of
-    VLit literal -> prPrec i 0 (concatD [prt 0 literal])
-    VVar id -> prPrec i 0 (concatD [prt 0 id])
-    VCall call -> prPrec i 0 (concatD [prt 0 call])
-    VExp exp -> prPrec i 0 (concatD [prt 0 exp])
-    VBExp bexp -> prPrec i 0 (concatD [prt 0 bexp])
   prtList _ [] = (concatD [])
   prtList _ [x] = (concatD [prt 0 x])
   prtList _ (x:xs) = (concatD [prt 0 x, doc (showString ","), prt 0 xs])
@@ -182,13 +181,12 @@ instance Print Var where
   prtList _ (x:xs) = (concatD [prt 0 x, doc (showString ","), prt 0 xs])
 instance Print Decl where
   prt i e = case e of
-    DVar id type_ -> prPrec i 0 (concatD [doc (showString "var"), prt 0 id, prt 0 type_])
-    DVarI id type_ value -> prPrec i 0 (concatD [doc (showString "var"), prt 0 id, prt 0 type_, doc (showString "="), prt 0 value])
+    DVar id type_ exp -> prPrec i 0 (concatD [doc (showString "var"), prt 0 id, prt 0 type_, doc (showString "="), prt 0 exp])
     DFunc id params ret stmts -> prPrec i 0 (concatD [doc (showString "func"), prt 0 id, doc (showString "("), prt 0 params, doc (showString ")"), doc (showString "->"), prt 0 ret, doc (showString "{"), prt 0 stmts, doc (showString "}")])
 
 instance Print Elif where
   prt i e = case e of
-    EElif bexp stmts -> prPrec i 0 (concatD [doc (showString "elif"), prt 0 bexp, doc (showString "{"), prt 0 stmts, doc (showString "}")])
+    EElif exp stmts -> prPrec i 0 (concatD [doc (showString "elif"), prt 0 exp, doc (showString "{"), prt 0 stmts, doc (showString "}")])
   prtList _ [] = (concatD [])
   prtList _ (x:xs) = (concatD [prt 0 x, prt 0 xs])
 instance Print Else where
@@ -197,13 +195,13 @@ instance Print Else where
 
 instance Print Stmt where
   prt i e = case e of
-    SReturn value -> prPrec i 0 (concatD [doc (showString "return"), prt 0 value])
-    SPrint value -> prPrec i 0 (concatD [doc (showString "print"), prt 0 value])
+    SReturn rval -> prPrec i 0 (concatD [doc (showString "return"), prt 0 rval])
+    SPrint exp -> prPrec i 0 (concatD [doc (showString "print"), prt 0 exp])
     SDecl decl -> prPrec i 0 (concatD [prt 0 decl])
-    SIf bexp stmts elifs -> prPrec i 0 (concatD [doc (showString "if"), prt 0 bexp, doc (showString "{"), prt 0 stmts, doc (showString "}"), prt 0 elifs])
-    SIfelse bexp stmts elifs else_ -> prPrec i 0 (concatD [doc (showString "if"), prt 0 bexp, doc (showString "{"), prt 0 stmts, doc (showString "}"), prt 0 elifs, prt 0 else_])
-    SWhile bexp stmts -> prPrec i 0 (concatD [doc (showString "while"), prt 0 bexp, doc (showString "{"), prt 0 stmts, doc (showString "}")])
-    SAssign vars value -> prPrec i 0 (concatD [prt 0 vars, doc (showString "="), prt 0 value])
+    SIf exp stmts elifs -> prPrec i 0 (concatD [doc (showString "if"), prt 0 exp, doc (showString "{"), prt 0 stmts, doc (showString "}"), prt 0 elifs])
+    SIfelse exp stmts elifs else_ -> prPrec i 0 (concatD [doc (showString "if"), prt 0 exp, doc (showString "{"), prt 0 stmts, doc (showString "}"), prt 0 elifs, prt 0 else_])
+    SWhile exp stmts -> prPrec i 0 (concatD [doc (showString "while"), prt 0 exp, doc (showString "{"), prt 0 stmts, doc (showString "}")])
+    SAssign vars exp -> prPrec i 0 (concatD [prt 0 vars, doc (showString "="), prt 0 exp])
     SBreak -> prPrec i 0 (concatD [doc (showString "break")])
     SCont -> prPrec i 0 (concatD [doc (showString "continue")])
     SCall call -> prPrec i 0 (concatD [prt 0 call])

@@ -34,29 +34,30 @@ import ErrM
   '>=' { PT _ (TS _ 19) }
   '[' { PT _ (TS _ 20) }
   ']' { PT _ (TS _ 21) }
-  'and' { PT _ (TS _ 22) }
-  'bool' { PT _ (TS _ 23) }
-  'break' { PT _ (TS _ 24) }
-  'continue' { PT _ (TS _ 25) }
-  'elif' { PT _ (TS _ 26) }
-  'else' { PT _ (TS _ 27) }
-  'error' { PT _ (TS _ 28) }
-  'false' { PT _ (TS _ 29) }
-  'func' { PT _ (TS _ 30) }
-  'if' { PT _ (TS _ 31) }
-  'int' { PT _ (TS _ 32) }
-  'not' { PT _ (TS _ 33) }
-  'or' { PT _ (TS _ 34) }
-  'print' { PT _ (TS _ 35) }
-  'return' { PT _ (TS _ 36) }
-  'string' { PT _ (TS _ 37) }
-  'true' { PT _ (TS _ 38) }
-  'var' { PT _ (TS _ 39) }
-  'void' { PT _ (TS _ 40) }
-  'while' { PT _ (TS _ 41) }
-  '{' { PT _ (TS _ 42) }
-  '|>' { PT _ (TS _ 43) }
-  '}' { PT _ (TS _ 44) }
+  '_' { PT _ (TS _ 22) }
+  'and' { PT _ (TS _ 23) }
+  'bool' { PT _ (TS _ 24) }
+  'break' { PT _ (TS _ 25) }
+  'continue' { PT _ (TS _ 26) }
+  'elif' { PT _ (TS _ 27) }
+  'else' { PT _ (TS _ 28) }
+  'error' { PT _ (TS _ 29) }
+  'false' { PT _ (TS _ 30) }
+  'func' { PT _ (TS _ 31) }
+  'if' { PT _ (TS _ 32) }
+  'int' { PT _ (TS _ 33) }
+  'not' { PT _ (TS _ 34) }
+  'or' { PT _ (TS _ 35) }
+  'print' { PT _ (TS _ 36) }
+  'return' { PT _ (TS _ 37) }
+  'string' { PT _ (TS _ 38) }
+  'true' { PT _ (TS _ 39) }
+  'var' { PT _ (TS _ 40) }
+  'void' { PT _ (TS _ 41) }
+  'while' { PT _ (TS _ 42) }
+  '{' { PT _ (TS _ 43) }
+  '|>' { PT _ (TS _ 44) }
+  '}' { PT _ (TS _ 45) }
 
 L_integ  { PT _ (TI $$) }
 L_quoted { PT _ (TL $$) }
@@ -77,7 +78,7 @@ Boolean :: { Boolean }
 Boolean : 'true' { AbsGrammar.BTrue }
         | 'false' { AbsGrammar.BFalse }
 Map :: { Map }
-Map : Value ':' Value { AbsGrammar.MapKV $1 $3 }
+Map : Exp ':' Exp { AbsGrammar.MapKV $1 $3 }
 ListMap :: { [Map] }
 ListMap : {- empty -} { [] }
         | Map { (:[]) $1 }
@@ -87,41 +88,46 @@ Literal : Integer { AbsGrammar.LInt $1 }
         | Boolean { AbsGrammar.LBool $1 }
         | String { AbsGrammar.LStr $1 }
         | Error { AbsGrammar.LErr $1 }
-        | '[' ListValue ']' { AbsGrammar.LArr $2 }
-        | '<|' ListValue '|>' { AbsGrammar.LTup $2 }
+        | '[' ListExp ']' { AbsGrammar.LArr $2 }
+        | '<|' ListExp '|>' { AbsGrammar.LTup $2 }
         | '{' ListMap '}' { AbsGrammar.LMap $2 }
-Exp2 :: { Exp }
-Exp2 : Call { AbsGrammar.ECall $1 }
+Comp :: { Comp }
+Comp : '<' { AbsGrammar.CLt }
+     | '>' { AbsGrammar.CGt }
+     | '<=' { AbsGrammar.CLe }
+     | '>=' { AbsGrammar.CGe }
+     | '==' { AbsGrammar.CEq }
+BOp :: { BOp }
+BOp : 'and' { AbsGrammar.BAnd } | 'or' { AbsGrammar.BOr }
+Exp6 :: { Exp }
+Exp6 : Call { AbsGrammar.ECall $1 }
      | Ident { AbsGrammar.EVar $1 }
-     | Integer { AbsGrammar.EInt $1 }
+     | Literal { AbsGrammar.ELit $1 }
      | '(' Exp ')' { $2 }
+Exp5 :: { Exp }
+Exp5 : Exp5 '*' Exp6 { AbsGrammar.ETimes $1 $3 }
+     | Exp5 '/' Exp6 { AbsGrammar.EDiv $1 $3 }
+     | Exp5 '%' Exp6 { AbsGrammar.EMod $1 $3 }
+     | Exp6 { $1 }
+Exp4 :: { Exp }
+Exp4 : Exp4 '+' Exp5 { AbsGrammar.EPlus $1 $3 }
+     | Exp4 '-' Exp5 { AbsGrammar.EMinus $1 $3 }
+     | Exp5 { $1 }
+Exp3 :: { Exp }
+Exp3 : Exp3 Comp Exp4 { AbsGrammar.EComp $1 $2 $3 } | Exp4 { $1 }
+Exp2 :: { Exp }
+Exp2 : 'not' Exp3 { AbsGrammar.ENot $2 } | Exp3 { $1 }
 Exp1 :: { Exp }
-Exp1 : Exp1 '*' Exp2 { AbsGrammar.ETimes $1 $3 }
-     | Exp1 '/' Exp2 { AbsGrammar.EDiv $1 $3 }
-     | Exp1 '%' Exp2 { AbsGrammar.EMod $1 $3 }
-     | Exp2 { $1 }
+Exp1 : Exp1 BOp Exp2 { AbsGrammar.EBool $1 $2 $3 } | Exp2 { $1 }
 Exp :: { Exp }
-Exp : Exp '+' Exp1 { AbsGrammar.EPlus $1 $3 }
-    | Exp '-' Exp1 { AbsGrammar.EMinus $1 $3 }
-    | Exp1 { $1 }
-BExp3 :: { BExp }
-BExp3 : Call { AbsGrammar.BCall $1 }
-      | Ident { AbsGrammar.BVar $1 }
-      | Boolean { AbsGrammar.BBool $1 }
-      | '(' BExp ')' { $2 }
-BExp2 :: { BExp }
-BExp2 : Exp '<' Exp { AbsGrammar.BLt $1 $3 }
-      | Exp '>' Exp { AbsGrammar.BGt $1 $3 }
-      | Exp '<=' Exp { AbsGrammar.BLe $1 $3 }
-      | Exp '>=' Exp { AbsGrammar.BGe $1 $3 }
-      | Exp '==' Exp { AbsGrammar.BEq $1 $3 }
-      | BExp3 { $1 }
-BExp1 :: { BExp }
-BExp1 : 'not' BExp { AbsGrammar.BNot $2 } | BExp2 { $1 }
-BExp :: { BExp }
-BExp : BExp 'and' BExp1 { AbsGrammar.BAnd $1 $3 }
-     | BExp 'or' BExp1 { AbsGrammar.BOr $1 $3 }
-     | BExp1 { $1 }
+Exp : Exp1 { $1 }
+ListExp :: { [Exp] }
+ListExp : {- empty -} { [] }
+        | Exp { (:[]) $1 }
+        | Exp ',' ListExp { (:) $1 $3 }
+Call :: { Call }
+Call : Ident '(' ListExp ')' { AbsGrammar.CFun $1 $3 }
+     | Ident '.' Ident '(' ListExp ')' { AbsGrammar.CMet $1 $3 $5 }
 Type :: { Type }
 Type : 'int' { AbsGrammar.TInt }
      | 'bool' { AbsGrammar.TBool }
@@ -134,25 +140,14 @@ ListType :: { [Type] }
 ListType : Type { (:[]) $1 } | Type ',' ListType { (:) $1 $3 }
 Ret :: { Ret }
 Ret : 'void' { AbsGrammar.RVoid } | Type { AbsGrammar.RType $1 }
+RVal :: { RVal }
+RVal : Exp { AbsGrammar.RExp $1 } | '_' { AbsGrammar.RNone }
 Param :: { Param }
 Param : Ident Type { AbsGrammar.PVal $1 $2 }
 ListParam :: { [Param] }
 ListParam : {- empty -} { [] }
           | Param { (:[]) $1 }
           | Param ',' ListParam { (:) $1 $3 }
-Call :: { Call }
-Call : Ident '(' ListValue ')' { AbsGrammar.CFun $1 $3 }
-     | Ident '.' Ident '(' ListValue ')' { AbsGrammar.CMet $1 $3 $5 }
-Value :: { Value }
-Value : Literal { AbsGrammar.VLit $1 }
-      | Ident { AbsGrammar.VVar $1 }
-      | Call { AbsGrammar.VCall $1 }
-      | Exp { AbsGrammar.VExp $1 }
-      | BExp { AbsGrammar.VBExp $1 }
-ListValue :: { [Value] }
-ListValue : {- empty -} { [] }
-          | Value { (:[]) $1 }
-          | Value ',' ListValue { (:) $1 $3 }
 Var :: { Var }
 Var : Ident { AbsGrammar.AVar $1 }
 ListVar :: { [Var] }
@@ -160,23 +155,22 @@ ListVar : {- empty -} { [] }
         | Var { (:[]) $1 }
         | Var ',' ListVar { (:) $1 $3 }
 Decl :: { Decl }
-Decl : 'var' Ident Type { AbsGrammar.DVar $2 $3 }
-     | 'var' Ident Type '=' Value { AbsGrammar.DVarI $2 $3 $5 }
+Decl : 'var' Ident Type '=' Exp { AbsGrammar.DVar $2 $3 $5 }
      | 'func' Ident '(' ListParam ')' '->' Ret '{' ListStmt '}' { AbsGrammar.DFunc $2 $4 $7 (reverse $9) }
 Elif :: { Elif }
-Elif : 'elif' BExp '{' ListStmt '}' { AbsGrammar.EElif $2 (reverse $4) }
+Elif : 'elif' Exp '{' ListStmt '}' { AbsGrammar.EElif $2 (reverse $4) }
 ListElif :: { [Elif] }
 ListElif : {- empty -} { [] } | ListElif Elif { flip (:) $1 $2 }
 Else :: { Else }
 Else : 'else' '{' ListStmt '}' { AbsGrammar.EElse (reverse $3) }
 Stmt :: { Stmt }
-Stmt : 'return' Value { AbsGrammar.SReturn $2 }
-     | 'print' Value { AbsGrammar.SPrint $2 }
+Stmt : 'return' RVal { AbsGrammar.SReturn $2 }
+     | 'print' Exp { AbsGrammar.SPrint $2 }
      | Decl { AbsGrammar.SDecl $1 }
-     | 'if' BExp '{' ListStmt '}' ListElif { AbsGrammar.SIf $2 (reverse $4) (reverse $6) }
-     | 'if' BExp '{' ListStmt '}' ListElif Else { AbsGrammar.SIfelse $2 (reverse $4) (reverse $6) $7 }
-     | 'while' BExp '{' ListStmt '}' { AbsGrammar.SWhile $2 (reverse $4) }
-     | ListVar '=' Value { AbsGrammar.SAssign $1 $3 }
+     | 'if' Exp '{' ListStmt '}' ListElif { AbsGrammar.SIf $2 (reverse $4) (reverse $6) }
+     | 'if' Exp '{' ListStmt '}' ListElif Else { AbsGrammar.SIfelse $2 (reverse $4) (reverse $6) $7 }
+     | 'while' Exp '{' ListStmt '}' { AbsGrammar.SWhile $2 (reverse $4) }
+     | ListVar '=' Exp { AbsGrammar.SAssign $1 $3 }
      | 'break' { AbsGrammar.SBreak }
      | 'continue' { AbsGrammar.SCont }
      | Call { AbsGrammar.SCall $1 }

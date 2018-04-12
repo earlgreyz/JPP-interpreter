@@ -15,7 +15,7 @@ data Program = Prog [Stmt]
 data Boolean = BTrue | BFalse
   deriving (Eq, Ord, Show, Read)
 
-data Map = MapKV Value Value
+data Map = MapKV Exp Exp
   deriving (Eq, Ord, Show, Read)
 
 data Literal
@@ -23,34 +23,32 @@ data Literal
     | LBool Boolean
     | LStr String
     | LErr Error
-    | LArr [Value]
-    | LTup [Value]
+    | LArr [Exp]
+    | LTup [Exp]
     | LMap [Map]
+  deriving (Eq, Ord, Show, Read)
+
+data Comp = CLt | CGt | CLe | CGe | CEq
+  deriving (Eq, Ord, Show, Read)
+
+data BOp = BAnd | BOr
   deriving (Eq, Ord, Show, Read)
 
 data Exp
     = ECall Call
     | EVar Ident
-    | EInt Integer
+    | ELit Literal
     | ETimes Exp Exp
     | EDiv Exp Exp
     | EMod Exp Exp
     | EPlus Exp Exp
     | EMinus Exp Exp
+    | EComp Exp Comp Exp
+    | ENot Exp
+    | EBool Exp BOp Exp
   deriving (Eq, Ord, Show, Read)
 
-data BExp
-    = BCall Call
-    | BVar Ident
-    | BBool Boolean
-    | BLt Exp Exp
-    | BGt Exp Exp
-    | BLe Exp Exp
-    | BGe Exp Exp
-    | BEq Exp Exp
-    | BNot BExp
-    | BAnd BExp BExp
-    | BOr BExp BExp
+data Call = CFun Ident [Exp] | CMet Ident Ident [Exp]
   deriving (Eq, Ord, Show, Read)
 
 data Type
@@ -66,39 +64,32 @@ data Type
 data Ret = RVoid | RType Type
   deriving (Eq, Ord, Show, Read)
 
+data RVal = RExp Exp | RNone
+  deriving (Eq, Ord, Show, Read)
+
 data Param = PVal Ident Type
-  deriving (Eq, Ord, Show, Read)
-
-data Call = CFun Ident [Value] | CMet Ident Ident [Value]
-  deriving (Eq, Ord, Show, Read)
-
-data Value
-    = VLit Literal | VVar Ident | VCall Call | VExp Exp | VBExp BExp
   deriving (Eq, Ord, Show, Read)
 
 data Var = AVar Ident
   deriving (Eq, Ord, Show, Read)
 
-data Decl
-    = DVar Ident Type
-    | DVarI Ident Type Value
-    | DFunc Ident [Param] Ret [Stmt]
+data Decl = DVar Ident Type Exp | DFunc Ident [Param] Ret [Stmt]
   deriving (Eq, Ord, Show, Read)
 
-data Elif = EElif BExp [Stmt]
+data Elif = EElif Exp [Stmt]
   deriving (Eq, Ord, Show, Read)
 
 data Else = EElse [Stmt]
   deriving (Eq, Ord, Show, Read)
 
 data Stmt
-    = SReturn Value
-    | SPrint Value
+    = SReturn RVal
+    | SPrint Exp
     | SDecl Decl
-    | SIf BExp [Stmt] [Elif]
-    | SIfelse BExp [Stmt] [Elif] Else
-    | SWhile BExp [Stmt]
-    | SAssign [Var] Value
+    | SIf Exp [Stmt] [Elif]
+    | SIfelse Exp [Stmt] [Elif] Else
+    | SWhile Exp [Stmt]
+    | SAssign [Var] Exp
     | SBreak
     | SCont
     | SCall Call
