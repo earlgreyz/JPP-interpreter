@@ -9,7 +9,6 @@ specification/*.log
 specification/*.pdf
 specification/*.synctex.gz
 
-# BNFC
-grammar/TestGrammar
-grammar/*.hi
-grammar/*.o
+# Build
+build
+interpreter
