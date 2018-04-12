@@ -1,11 +1,9 @@
 var x int = 2 + 3 * 4;
+func test(x int) -> void {
+  print x;
+  return _;
+};
+var x int = test(x);
 
-if x < 20 {
-  var y bool = false;
-  print y;
-  print "x < 20";
-} elif x < 30
-  print "x < 30"
-else
-  print "x >= 30"
-endif;
+test(2);
+test(x);

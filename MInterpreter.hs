@@ -17,6 +17,8 @@ data Variable =
   | VString String
   | VError String
   | VArray [Variable]
+  | VTuple [Variable]
+  | VFunc ([Exp] -> Interpreter Variable)
   | VNone
 
 instance Eq Variable where
@@ -26,16 +28,18 @@ instance Eq Variable where
   (VError x) == (VError y) = x == y
   _ == _ = False
 
+stringify :: [Variable] -> String
+stringify [] = []
+stringify [x] = show x
+stringify (x:xs) = (show x) ++ ", " ++ (stringify xs)
+
 instance Show Variable where
   show (VInt n) = show n
   show (VBool b) = show b
   show (VString s) = "\"" ++ s ++ "\""
   show (VError e) = "`" ++ e ++ "`"
-  show (VArray xs) = "[" ++ stringify xs ++ "]" where
-    stringify :: [Variable] -> String
-    stringify [] = []
-    stringify [x] = show x
-    stringify (x:xs) = (show x) ++ ", " ++ (stringify xs)
+  show (VArray xs) = "[" ++ stringify xs ++ "]"
+  show (VTuple xs) = "<|" ++ stringify xs ++ "|>"
   show VNone = "None"
 
 type Loc = (Int, Type)
@@ -62,7 +66,23 @@ evalInt e = do
     _ -> throwError $ "Integer expected."
 
 evalExp :: Exp -> Interpreter Variable
-evalExp (ECall _) = throwError $ "Not implemented yet." -- TODO: implement
+evalExp (ECall c) = do
+  case c of
+    (CFun f es) -> do
+      env <- ask
+      store <- get
+      location <- case env DataMap.!? f of
+        Nothing -> throwError $ show f ++ " was not declared in this scope."
+        Just loc -> return loc
+      value <- case store DataMap.!? location of
+        Nothing -> throwError $ show f ++ " has not yet been initialized."
+        Just val -> return val
+      case value of
+        VFunc func -> do
+          ret <- func es
+          return ret
+        _ -> throwError $ show f ++ " is not a function."
+    (CMet _ _ _) -> throwError $ "Not implemented yet." -- TODO: implement
 evalExp (EVar x) = do
   env <- ask
   store <- get
@@ -99,17 +119,39 @@ evalExp (EBool e b f) = do
     BOr -> return (||)
   fmap VBool $ liftM2 op (evalBool e) (evalBool f)
 
-execDecl :: Decl -> Interpreter () -> Interpreter ()
-execDecl (DVar x t v) interpreter = do
+allocate :: Type -> Interpreter Loc
+allocate t = do
   env <- ask
   store <- get
   let maxEnd = if (DataMap.null env) then 0 else maximum $ map fst (DataMap.elems env)
   let maxStore = if (DataMap.null store) then 0 else maximum $ map fst (DataMap.keys store)
-  let locNumber = (maximum [maxStore, maxEnd]) + 1
-  let location = (locNumber, t)
+  let location = (maximum [maxStore, maxEnd]) + 1
+  return (location, t)
+
+function :: Ident -> [Param] -> Stmt -> [Exp] -> Interpreter Variable
+function f ps s vs = do
+    -- TODO: handle not enough args
+    foldr execDecl (execStmt s) $ map makeDecl (zip ps vs)
+    store <- get
+    ret <- case store DataMap.!? returnLocation of
+      Nothing -> throwError $ "Missing return statement."
+      Just value -> return value
+    modify $ DataMap.delete returnLocation
+    return ret
+  where
+    makeDecl :: (Param, Exp) -> Decl
+    makeDecl ((PVal x t), e) = (DVar x t e)
+
+execDecl :: Decl -> Interpreter () -> Interpreter ()
+execDecl (DVar x t v) interpreter = do
+  location <- allocate t
   value <- evalExp v
   modify $ DataMap.insert location value
   local (DataMap.insert x location) interpreter
+execDecl (DFunc f ps r s) interpreter = do
+  location <- allocate TInt
+  modify $ DataMap.insert location $ VFunc (function f ps s)
+  local (DataMap.insert f location) interpreter
 
 execStmt :: Stmt -> Interpreter ()
 execStmt (SBlock d s) = foldr execDecl (execManyStmt s) d
@@ -143,7 +185,9 @@ execStmt (SIfelse b s es e) = do
 execStmt (SWhile b s) = throwError $ "Not implemented yet." -- TODO: implement
 execStmt SBreak = throwError $ "Not implemented yet." -- TODO: implement
 execStmt SCont = throwError $ "Not implemented yet." -- TODO: implement
-execStmt (SCall _) = throwError $ "Not implemented yet." -- TODO: implement
+execStmt (SCall c) = do
+  ret <- evalExp (ECall c)
+  return ()
 
 execManyStmt :: [Stmt] -> Interpreter ()
 execManyStmt l = foldM (\_ -> execStmt) () l

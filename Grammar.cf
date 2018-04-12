@@ -80,7 +80,7 @@ separator Var "," ;
 
 {- Declarations -}
 DVar.     Decl  ::= "var" Ident Type "=" Exp ;
-DFunc.    Decl  ::= "func" Ident "(" [Param] ")" "->" Ret "{" [Decl] [Stmt] "}" ;
+DFunc.    Decl  ::= "func" Ident "(" [Param] ")" "->" Ret Stmt ;
 separator Decl ";" ;
 
 {- Conditionals -}
