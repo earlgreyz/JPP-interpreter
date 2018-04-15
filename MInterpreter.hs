@@ -190,7 +190,13 @@ execStmt (SCall c) = do
   return ()
 
 execManyStmt :: [Stmt] -> Interpreter ()
-execManyStmt l = foldM (\_ -> execStmt) () l
+execManyStmt l = foldM_ (\_ -> execStmtCond) () l where
+  execStmtCond :: Stmt -> Interpreter ()
+  execStmtCond s = do
+    store <- get
+    case store DataMap.!? returnLocation of
+      Nothing -> execStmt s
+      Just _ -> return ()
 
 exec :: Program -> IO ()
 exec (Prog d s) = do

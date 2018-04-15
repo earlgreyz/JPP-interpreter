@@ -1,9 +1,27 @@
-var x int = 2 + 3 * 4;
-func test(x int) -> void {
-  print x;
-  return _;
-};
-var x int = test(x);
+var f int = 0;
 
-test(2);
-test(x);
+func test(n int) -> int {
+  return 0;
+  return n;
+};
+
+func fib(n int) -> int {
+  if n == 0 or n == 1
+    return 1
+  endif;
+
+  return fib(n -1) + fib (n -2);
+};
+
+print fib(0);
+print fib(1);
+print fib(2);
+print fib(3);
+print fib(4);
+print fib(5);
+print fib(6);
+print fib(7);
+print fib(8);
+
+print test(0);
+print test(1);
