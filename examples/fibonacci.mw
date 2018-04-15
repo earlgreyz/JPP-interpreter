@@ -4,23 +4,23 @@ func fib1(n int) -> <|int, error|> {
   var n_2 int = 0;
   var err error = ``;
 
-  if n < 0 {
-    return <|0, `n must be greater than 0`|>;
-  } elif n == 0 or n == 1{
-    return <|1, ``|>;
-  } else {
+  if n < 0
+    return <|0, `n must be greater than 0`|>
+  elif n == 0 or n == 1
+    return <|1, ``|>
+  else {
     n_1, err = fib1(n - 1);
-    if err.HaveOccurred() {
-      return <|0, err|>;
-    };
+    if err.HaveOccurred()
+      return <|0, err|>
+    endif;
 
     n_2, err = fib1(n - 2);
-    if err.HaveOccurred() {
-      return <|0, err|>;
-    };
+    if err.HaveOccurred()
+      return <|0, err|>
+    endif;
 
     return <|n_1 + n_2, ``|>;
-  };
+  } endif;
 };
 
 // Given n calcluates nth fibonacci sequence number
@@ -28,9 +28,9 @@ func fib2(n int) -> <|int, error|> {
   var last int = 1;
   var current int = 1;
 
-  if n < 0 {
-    return <|0, `n must be greater than 0`|>;
-  };
+  if n < 0
+    return <|0, `n must be greater than 0`|>
+  endif;
 
   while (n > 0) {
     current, last = <|current + last, current|>;
@@ -44,15 +44,15 @@ var f int = 0;
 var err error = ``;
 
 f, err = fib1(5);
-if err.HaveOccurred() {
-  print err;
-} else {
-  print f;
-};
+if err.HaveOccurred()
+  print err
+else
+  print f
+endif;
 
 f, err = fib2(5);
-if err.HaveOccurred() {
-  print err;
-} else {
-  print f;
-};
+if err.HaveOccurred()
+  print err
+else
+  print f
+endif;

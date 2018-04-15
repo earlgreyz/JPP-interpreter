@@ -11,6 +11,14 @@ import AbsGrammar
 returnLocation :: Loc
 returnLocation = (-1, TInt)
 
+-- Special location used for loop state
+loopLocation :: Loc
+loopLocation = (-2, TInt)
+
+loopBreak    = VInt (-1)
+loopContinue = VInt (1)
+loopNormal   = VInt (0)
+
 data Variable =
   VInt Integer
   | VBool Bool
@@ -182,27 +190,41 @@ execStmt (SIfelse b s es e) = do
   if cond then execStmt s else case es of
     [] -> execStmt e
     (EElif b' s'):t -> execStmt (SIfelse b' s' t e)
-execStmt (SWhile b s) = throwError $ "Not implemented yet." -- TODO: implement
-execStmt SBreak = throwError $ "Not implemented yet." -- TODO: implement
-execStmt SCont = throwError $ "Not implemented yet." -- TODO: implement
+execStmt while@(SWhile b s) = do
+  cond <- evalBool b
+  if not cond then return () else do
+    execStmt s
+    store <- get
+    loopState <- case store DataMap.!? loopLocation of
+      Nothing -> throwError $ "Break/Continue called outside of the loop."
+      Just loop -> return loop
+    modify $ DataMap.insert loopLocation loopNormal
+    if loopState == loopBreak then return () else execStmtOrSkip while
+execStmt SBreak = do
+  modify $ DataMap.insert loopLocation loopBreak
+execStmt SCont = do
+  modify $ DataMap.insert loopLocation loopContinue
 execStmt (SCall c) = do
-  ret <- evalExp (ECall c)
+  _ <- evalExp (ECall c)
   return ()
 
+execStmtOrSkip :: Stmt -> Interpreter ()
+execStmtOrSkip s = do
+  store <- get
+  case store DataMap.!? returnLocation of
+    Just _ -> return ()
+    Nothing -> case store DataMap.!? loopLocation of
+      Nothing -> throwError $ "Break/Continue called outside of the loop."
+      Just loop -> if loop == loopNormal then execStmt s else return ()
+
 execManyStmt :: [Stmt] -> Interpreter ()
-execManyStmt l = foldM_ (\_ -> execStmtCond) () l where
-  execStmtCond :: Stmt -> Interpreter ()
-  execStmtCond s = do
-    store <- get
-    case store DataMap.!? returnLocation of
-      Nothing -> execStmt s
-      Just _ -> return ()
+execManyStmt l = foldM (\_ -> execStmtOrSkip) () l
 
 exec :: Program -> IO ()
 exec (Prog d s) = do
-  let initState = DataMap.fromList []
-  let initStore = DataMap.empty
+  let initState = DataMap.fromList [(loopLocation, loopNormal)]
+  let initStore = DataMap.fromList []
   result <- runErrorT $ flip runStateT initState $ flip runReaderT initStore $ execStmt (SBlock d s)
   case result of
     Left err -> hPutStrLn stderr $ "Runtime Error: " ++ err
-    Right _ -> return () -- putStrLn $ showStore store
+    Right _ -> return ()

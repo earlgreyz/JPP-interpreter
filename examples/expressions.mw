@@ -13,15 +13,27 @@ func fib(n int) -> int {
   return fib(n -1) + fib (n -2);
 };
 
-print fib(0);
-print fib(1);
-print fib(2);
-print fib(3);
-print fib(4);
-print fib(5);
-print fib(6);
-print fib(7);
-print fib(8);
+func loopTest(n int) -> int {
+  var i int = 0;
+  while i < n {
+    i = i + 1;
+    print i;
+    if i < 5 {
+      print "Before continue";
+      continue;
+      print "After continue";
+    } endif;
+    print "Not continue.";
+    if i > 10 return 0 endif;
+    print "Not return.";
+  };
+  print "Loop finished.";
+};
 
-print test(0);
-print test(1);
+var i int = 0;
+while i < 10 {
+  i = i + 1;
+  print fib(i);
+};
+
+print loopTest(50);
