@@ -192,21 +192,17 @@ execStmt (SIfelse b s es e) = do
     (EElif b' s'):t -> execStmt (SIfelse b' s' t e)
 execStmt while@(SWhile b s) = do
   cond <- evalBool b
-  if not cond then return () else do
+  when cond $ do
     execStmt s
     store <- get
     loopState <- case store DataMap.!? loopLocation of
       Nothing -> throwError $ "Break/Continue called outside of the loop."
       Just loop -> return loop
     modify $ DataMap.insert loopLocation loopNormal
-    if loopState == loopBreak then return () else execStmtOrSkip while
-execStmt SBreak = do
-  modify $ DataMap.insert loopLocation loopBreak
-execStmt SCont = do
-  modify $ DataMap.insert loopLocation loopContinue
-execStmt (SCall c) = do
-  _ <- evalExp (ECall c)
-  return ()
+    when (loopState /= loopBreak) (execStmtOrSkip while)
+execStmt SBreak = modify $ DataMap.insert loopLocation loopBreak
+execStmt SCont = modify $ DataMap.insert loopLocation loopContinue
+execStmt (SCall c) = evalExp (ECall c) >> return ()
 
 execStmtOrSkip :: Stmt -> Interpreter ()
 execStmtOrSkip s = do
@@ -215,7 +211,7 @@ execStmtOrSkip s = do
     Just _ -> return ()
     Nothing -> case store DataMap.!? loopLocation of
       Nothing -> throwError $ "Break/Continue called outside of the loop."
-      Just loop -> if loop == loopNormal then execStmt s else return ()
+      Just loop -> when (loop == loopNormal) (execStmt s)
 
 execManyStmt :: [Stmt] -> Interpreter ()
 execManyStmt l = foldM (\_ -> execStmtOrSkip) () l

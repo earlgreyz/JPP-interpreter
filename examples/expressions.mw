@@ -7,8 +7,7 @@ func test(n int) -> int {
 
 func fib(n int) -> int {
   if n == 0 or n == 1
-    return 1
-  endif;
+    return 1;
 
   return fib(n -1) + fib (n -2);
 };
@@ -22,9 +21,10 @@ func loopTest(n int) -> int {
       print "Before continue";
       continue;
       print "After continue";
-    } endif;
+    };
     print "Not continue.";
-    if i > 10 return 0 endif;
+    if i > 10
+      return 0;
     print "Not return.";
   };
   print "Loop finished.";
