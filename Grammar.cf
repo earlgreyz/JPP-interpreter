@@ -92,7 +92,7 @@ SBlock.   Stmt  ::= "{" [Decl] [Stmt] "}";
 SAssign.  Stmt  ::= Ident "=" Exp ;
 SUnpack.  Stmt  ::= [Var] "<-" Exp ;
 SReturn.  Stmt  ::= "return" RVal ;
-SPrint.   Stmt  ::= "print" Exp ;
+SPrint.   Stmt  ::= "print" [Exp] ;
 SIf.      Stmt  ::= "if" Exp Stmt [Elif] ;
 SIfelse.  Stmt  ::= "if" Exp Stmt [Elif] "else" Stmt ;
 SWhile.   Stmt  ::= "while" Exp Stmt ;

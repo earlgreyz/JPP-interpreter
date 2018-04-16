@@ -2,7 +2,7 @@ var f int = 0;
 var x string = "Ala ma kota";
 
 func test(n int) -> int {
-  print x;
+  print "x in `test` function has a value of: ", x;
   return 0;
   return n;
 };
@@ -18,33 +18,36 @@ func loopTest(n int) -> int {
   var i int = 0;
   while i < n {
     i = i + 1;
-    print i;
+    print i, ")";
     if i < 5 {
-      print "Before continue";
+      print " => Before continue";
       continue;
-      print "After continue";
+      print " => After continue";
     };
-    print "Not continue.";
+    print " => Not continue.";
     if i > 10
       return 0;
-    print "Not return.";
+    print " => Not return.";
   };
-  print "Loop finished.";
+  print " => Loop finished.";
 };
 
 var i int = 0;
 x = "Jan Kowalski" ;
 {
   var x int = 10;
-
   test(10);
   x = 30;
-  print x;
+  print "x in `main` body has a value of: ", x;
+  test(10);
+
+  print "=======================================================";
 
   while i < 10 {
     i = i + 1;
-    print fib(i);
+    print "Fibonacci ", i, " = ", fib(i);
   };
 
+  print "=======================================================";
   print loopTest(50);
 };

@@ -1,6 +1,6 @@
 module MInterpreter where
 
-import System.IO ( stderr, hPutStrLn, putStrLn )
+import System.IO ( stderr, hPutStrLn, putStrLn, putStr )
 import qualified Data.Map as DataMap
 import Control.Monad.State
 import Control.Monad.Except
@@ -36,18 +36,18 @@ instance Eq Variable where
   (VError x) == (VError y) = x == y
   _ == _ = False
 
-stringify :: [Variable] -> String
-stringify [] = []
-stringify [x] = show x
-stringify (x:xs) = (show x) ++ ", " ++ (stringify xs)
+stringifyList :: Show a => [a] -> String
+stringifyList [] = []
+stringifyList [x] = show x
+stringifyList (x:xs) = (show x) ++ ", " ++ (stringifyList xs)
 
 instance Show Variable where
   show (VInt n) = show n
   show (VBool b) = show b
-  show (VString s) = "\"" ++ s ++ "\""
+  show (VString s) = s
   show (VError e) = "`" ++ e ++ "`"
-  show (VArray xs) = "[" ++ stringify xs ++ "]"
-  show (VTuple xs) = "<|" ++ stringify xs ++ "|>"
+  show (VArray xs) = "[" ++ stringifyList xs ++ "]"
+  show (VTuple xs) = "<|" ++ stringifyList xs ++ "|>"
   show VNone = "None"
 
 type Loc = (Int, Type)
@@ -57,6 +57,12 @@ type Env = DataMap.Map Ident Loc
 type MExcept = ExceptT String IO
 type MState = StateT Store MExcept
 type Interpreter = ReaderT Env MState
+
+-- Get a value at key @k from map @m or raise an error @err
+mustGet :: Show k => Ord k => DataMap.Map k a -> k -> String -> Interpreter a
+mustGet m k err = case m DataMap.!? k of
+  Nothing -> throwError $ show k ++ err
+  Just v -> return v
 
 evalBool :: Exp -> Interpreter Bool
 evalBool e = do
@@ -73,33 +79,21 @@ evalInt e = do
     _ -> throwError $ "Integer expected."
 
 evalExp :: Exp -> Interpreter Variable
-evalExp (ECall c) = do
-  case c of
-    (CFun f es) -> do
-      env <- ask
-      store <- get
-      location <- case env DataMap.!? f of
-        Nothing -> throwError $ show f ++ " was not declared in this scope."
-        Just loc -> return loc
-      value <- case store DataMap.!? location of
-        Nothing -> throwError $ show f ++ " has not yet been initialized."
-        Just val -> return val
-      case value of
-        VFunc func -> do
-          ret <- func es
-          return ret
-        _ -> throwError $ show f ++ " is not a function."
-    (CMet _ _ _) -> throwError $ "Not implemented yet." -- TODO: implement
+evalExp (ECall c) = case c of
+  (CFun f es) -> do
+    env <- ask
+    store <- get
+    location <- mustGet env f " was not declared in this scope."
+    value <- mustGet store location " has not yet been initialized."
+    case value of
+      VFunc func -> func es
+      _ -> throwError $ show f ++ " is not a function."
+  (CMet _ _ _) -> throwError $ "Not implemented yet." -- TODO: implement
 evalExp (EVar x) = do
   env <- ask
   store <- get
-  location <- case env DataMap.!? x of
-    Nothing -> throwError $ show x ++ " was not declared in this scope."
-    Just loc -> return loc
-  value <- case store DataMap.!? location of
-    Nothing -> throwError $ show x ++ " has not yet been initialized."
-    Just val -> return val
-  return value
+  location <- mustGet env x " was not declared in this scope."
+  mustGet store location " has not yet been initialized."
 evalExp (ELit l) = case l of
   LInt n -> return $ VInt n
   LBool b -> let b' = case b of { BTrue -> True; BFalse -> False}
@@ -183,9 +177,9 @@ execStmt (SReturn r) = case r of
     modify $ DataMap.insert returnLocation value
   RNone -> do
     modify $ DataMap.insert returnLocation VNone
-execStmt (SPrint e) = do
-  value <- evalExp e
-  liftIO . putStrLn . show $ value
+execStmt (SPrint es) = do
+  mapM_ (\e -> evalExp e >>= liftIO . putStr . show) es
+  liftIO . putStr $ "\n"
 execStmt (SIf b s es) = do
   cond <- evalBool b
   if cond then execStmt s else case es of
