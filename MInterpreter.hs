@@ -34,6 +34,8 @@ instance Eq Variable where
   (VBool x) == (VBool y) = x == y
   (VString x) == (VString y) = x == y
   (VError x) == (VError y) = x == y
+  (VArray x) == (VArray y) = x == y
+  (VTuple x) == (VTuple y) = x == y
   _ == _ = False
 
 stringifyList :: Show a => [a] -> String
@@ -96,10 +98,10 @@ evalExp (EVar x) = do
   mustGet store location " has not yet been initialized."
 evalExp (ELit l) = case l of
   LInt n -> return $ VInt n
-  LBool b -> let b' = case b of { BTrue -> True; BFalse -> False}
-    in return $ VBool b'
+  LBool b -> return $ VBool $ if b == BTrue then True else False
   LStr s -> return $ VString s
   LErr (TokenError e) -> return $ VError e
+  LArr es -> mapM (\e -> evalExp e) es >>= \vs -> return $ VArray vs
   _ -> throwError "Not implemented yet." -- TODO: implement
 evalExp (ETimes e f) = fmap VInt $ liftM2 (*) (evalInt e) (evalInt f)
 evalExp (EDiv e f) = fmap VInt $ liftM2 (div) (evalInt e) (evalInt f)

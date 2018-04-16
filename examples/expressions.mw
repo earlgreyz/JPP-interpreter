@@ -34,20 +34,27 @@ func loopTest(n int) -> int {
 
 var i int = 0;
 x = "Jan Kowalski" ;
+print "x in `main` body has a value of: ", x;
+
 {
   var x int = 10;
   test(10);
   x = 30;
-  print "x in `main` body has a value of: ", x;
+  print "x in `main` block has a value of: ", x;
   test(10);
-
-  print "=======================================================";
-
-  while i < 10 {
-    i = i + 1;
-    print "Fibonacci ", i, " = ", fib(i);
-  };
-
-  print "=======================================================";
-  print loopTest(50);
 };
+
+print "=======================================================";
+
+while i < 10 {
+  i = i + 1;
+  print "Fibonacci ", i, " = ", fib(i);
+};
+
+{
+  var array [int] = [fib(0), fib(1), fib(2), fib(3), fib(4), fib(5)];
+  print "Fibonacci numbers: ", array;
+};
+
+print "=======================================================";
+print loopTest(50);
