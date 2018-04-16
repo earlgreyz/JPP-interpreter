@@ -80,6 +80,37 @@ evalInt e = do
     VInt n -> return n
     _ -> throwError $ "Integer expected."
 
+-- Builtin functions
+functionsMap :: DataMap.Map Ident (Ident -> [Exp] -> Interpreter Variable)
+functionsMap = DataMap.fromList [(Ident "Append", arrayAppend), (Ident "At", arrayAt)]
+
+startFunction :: Int -> Ident -> [Exp] -> Interpreter (Loc, Variable, [Variable])
+startFunction argc self es = do
+  env <- ask
+  store <- get
+  location <- mustGet env self " was not declared in this scope."
+  args <- mapM evalExp es
+  value <- mustGet store location " has not yet been initialized."
+  unless (length args == argc) $ throwError "Expected one argument."
+  return (location, value, args)
+
+arrayAppend :: Ident -> [Exp] -> Interpreter Variable
+arrayAppend self es = do
+  (location, value, args) <- startFunction 1 self es
+  case value of
+    VArray arr -> do
+      modify $ DataMap.insert location $ VArray (arr ++ args)
+      return VNone
+    _ -> throwError "Array expected."
+
+arrayAt :: Ident -> [Exp] -> Interpreter Variable
+arrayAt self es = do
+  (location, value, args) <- startFunction 1 self es
+  case value of
+    VArray arr -> case args !! 0 of
+      VInt index -> return $ arr !! (fromIntegral index)
+    _ -> throwError "Array expected."
+
 evalExp :: Exp -> Interpreter Variable
 evalExp (ECall c) = case c of
   (CFun f es) -> do
@@ -90,7 +121,9 @@ evalExp (ECall c) = case c of
     case value of
       VFunc func -> func es
       _ -> throwError $ show f ++ " is not a function."
-  (CMet x f es) -> throwError $ "Not implemented yet." -- TODO: implement
+  (CMet x f es) -> do
+    fun <- mustGet functionsMap f " was not declared in this scope."
+    fun x es
 evalExp (EVar x) = do
   env <- ask
   store <- get
@@ -103,7 +136,7 @@ evalExp (ELit l) = case l of
   LErr (TokenError e) -> return $ VError e
   LArr es -> mapM (\e -> evalExp e) es >>= \vs -> return $ VArray vs
   LTup es -> mapM (\e -> evalExp e) es >>= \vs -> return $ VTuple vs
-  _ -> throwError "Not implemented yet." -- TODO: implement
+  _ -> throwError "Not implemented yet." -- TODO: implement map
 evalExp (ETimes e f) = fmap VInt $ liftM2 (*) (evalInt e) (evalInt f)
 evalExp (EDiv e f) = fmap VInt $ liftM2 (div) (evalInt e) (evalInt f)
 evalExp (EMod e f) = fmap VInt $ liftM2 (mod) (evalInt e) (evalInt f)
@@ -144,17 +177,15 @@ execDecl (DFunc f ps r s) interpreter = do
   modify $ DataMap.insert location $ VFunc (function f env location ps s )
   local (DataMap.insert f location) interpreter
   where
-    makeDecl :: (Param, Exp) -> Decl
-    makeDecl ((PVal x t), e) = (DVar x t e)
-    execDeclWithEnv :: Env -> Decl -> Interpreter Env
-    execDeclWithEnv env (DVar x t e) = do
+    execArg :: Env -> (Param, Exp) -> Interpreter Env
+    execArg env ((PVal x t), e) = do
       location <- allocate t
       value <- evalExp e
       modify $ DataMap.insert location value
       return $ DataMap.insert x location env
     function :: Ident -> Env -> Loc -> [Param] -> Stmt -> [Exp] -> Interpreter Variable
     function f env location ps s vs = do
-        env' <- foldM execDeclWithEnv env $ map makeDecl (zip ps vs)
+        env' <- foldM execArg env $ zip ps vs
         local (\_ -> DataMap.insert f location env') $ do
           execStmt s
           store <- get

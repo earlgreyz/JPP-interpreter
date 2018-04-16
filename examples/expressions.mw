@@ -56,6 +56,17 @@ while i < 10 {
   print "Fibonacci numbers: ", array;
 };
 
+{
+  var array [int] = [];
+  var i int = 0;
+  while i < 10 {
+    array.Append(fib(i));
+    i = i + 1;
+  };
+  print "Fibonacci numbers: ", array;
+  print "8th fibonacci number is: ", array.At(8);
+};
+
 print "=======================================================";
 print loopTest(50);
 
@@ -79,5 +90,5 @@ print loopTest(50);
   print "Vars: ", value, ", ", name, ", ", err;
   value, name, err <- tuple;
 
-  print "Unpacked: ", value, ", ", name, ", ", err;  
+  print "Unpacked: ", value, ", ", name, ", ", err;
 };
