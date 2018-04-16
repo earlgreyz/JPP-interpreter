@@ -3,7 +3,7 @@ module MInterpreter where
 import System.IO ( stderr, hPutStrLn, putStrLn )
 import qualified Data.Map as DataMap
 import Control.Monad.State
-import Control.Monad.Error
+import Control.Monad.Except
 import Control.Monad.Reader
 import AbsGrammar
 
@@ -51,13 +51,12 @@ instance Show Variable where
   show VNone = "None"
 
 type Loc = (Int, Type)
-type Env = DataMap.Map Ident Loc
 type Store = DataMap.Map Loc Variable
--- type FStore = Map Ident (Function, Type)
+type Env = DataMap.Map Ident Loc
 
-type MError = ErrorT String IO
-type StetefulError = StateT Store MError
-type Interpreter = ReaderT Env StetefulError
+type MExcept = ExceptT String IO
+type MState = StateT Store MExcept
+type Interpreter = ReaderT Env MState
 
 evalBool :: Exp -> Interpreter Bool
 evalBool e = do
@@ -218,9 +217,9 @@ execManyStmt l = foldM (\_ -> execStmtOrSkip) () l
 
 exec :: Program -> IO ()
 exec (Prog d s) = do
-  let initState = DataMap.fromList [(loopLocation, loopNormal)]
-  let initStore = DataMap.fromList []
-  result <- runErrorT $ flip runStateT initState $ flip runReaderT initStore $ execStmt (SBlock d s)
+  let initStore = DataMap.fromList [(loopLocation, loopNormal)]
+  let initEnv = DataMap.empty
+  result <- runExceptT $ flip runStateT initStore $ flip runReaderT initEnv $ execStmt (SBlock d s)
   case result of
     Left err -> hPutStrLn stderr $ "Runtime Error: " ++ err
     Right _ -> return ()
