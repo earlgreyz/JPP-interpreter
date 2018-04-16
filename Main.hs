@@ -12,7 +12,7 @@ import AbsGrammar
 
 import ErrM
 
-import MInterpreter
+import MExec
 
 type ParseFun a = [Token] -> Err a
 

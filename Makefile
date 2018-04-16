@@ -1,10 +1,11 @@
 BUILD_DIR=build
-FILES=${BUILD_DIR}/{LexGrammar,AbsGrammar,ParGrammar,SkelGrammar,PrintGrammar,ErrM}.hs
+GRAMMAR_FILES=${BUILD_DIR}/{LexGrammar,AbsGrammar,ParGrammar,SkelGrammar,PrintGrammar,ErrM}.hs
+INTERPRETER_FILES={Main,MInterpreter,MUtil,MArray,MExec}.hs
 
 all: interpreter
 
 interpreter: grammar Main.hs MInterpreter.hs
-	ghc --make Main.hs ${FILES} -o interpreter -outputdir ${BUILD_DIR}
+	ghc --make ${INTERPRETER_FILES} ${GRAMMAR_FILES} -o interpreter -outputdir ${BUILD_DIR}
 
 grammar: Grammar.cf
 	mkdir -p ${BUILD_DIR}
@@ -12,7 +13,7 @@ grammar: Grammar.cf
 	cd build && make
 
 fast: Main.hs MInterpreter.hs
-	ghc --make Main.hs ${FILES} -o interpreter -outputdir ${BUILD_DIR}
+	ghc --make ${INTERPRETER_FILES} ${GRAMMAR_FILES}  -o interpreter -outputdir ${BUILD_DIR}
 
 .PHONY:
 clean:
