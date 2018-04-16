@@ -135,20 +135,6 @@ allocate t = do
   let location = (maximum [maxStore, maxEnd]) + 1
   return (location, t)
 
-function :: Ident -> [Param] -> Stmt -> [Exp] -> Interpreter Variable
-function f ps s vs = do
-    -- TODO: handle not enough args
-    foldr execDecl (execStmt s) $ map makeDecl (zip ps vs)
-    store <- get
-    ret <- case store DataMap.!? returnLocation of
-      Nothing -> throwError $ "Missing return statement."
-      Just value -> return value
-    modify $ DataMap.delete returnLocation
-    return ret
-  where
-    makeDecl :: (Param, Exp) -> Decl
-    makeDecl ((PVal x t), e) = (DVar x t e)
-
 execDecl :: Decl -> Interpreter () -> Interpreter ()
 execDecl (DVar x t v) interpreter = do
   location <- allocate t
@@ -157,8 +143,29 @@ execDecl (DVar x t v) interpreter = do
   local (DataMap.insert x location) interpreter
 execDecl (DFunc f ps r s) interpreter = do
   location <- allocate TInt
-  modify $ DataMap.insert location $ VFunc (function f ps s)
+  env <- ask
+  modify $ DataMap.insert location $ VFunc (function f env location ps s )
   local (DataMap.insert f location) interpreter
+  where
+    makeDecl :: (Param, Exp) -> Decl
+    makeDecl ((PVal x t), e) = (DVar x t e)
+    execDeclWithEnv :: Env -> Decl -> Interpreter Env
+    execDeclWithEnv env (DVar x t e) = do
+      location <- allocate t
+      value <- evalExp e
+      modify $ DataMap.insert location value
+      return $ DataMap.insert x location env
+    function :: Ident -> Env -> Loc -> [Param] -> Stmt -> [Exp] -> Interpreter Variable
+    function f env location ps s vs = do
+        env' <- foldM execDeclWithEnv env $ map makeDecl (zip ps vs)
+        local (\_ -> DataMap.insert f location env') $ do
+          execStmt s
+          store <- get
+          ret <- case store DataMap.!? returnLocation of
+            Nothing -> throwError $ "Missing return statement."
+            Just value -> return value
+          modify $ DataMap.delete returnLocation
+          return ret
 
 execStmt :: Stmt -> Interpreter ()
 execStmt (SBlock d s) = foldr execDecl (execManyStmt s) d

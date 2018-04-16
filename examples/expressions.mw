@@ -1,6 +1,8 @@
 var f int = 0;
+var x string = "Ala ma kota";
 
 func test(n int) -> int {
+  print x;
   return 0;
   return n;
 };
@@ -31,9 +33,18 @@ func loopTest(n int) -> int {
 };
 
 var i int = 0;
-while i < 10 {
-  i = i + 1;
-  print fib(i);
-};
+x = "Jan Kowalski" ;
+{
+  var x int = 10;
 
-print loopTest(50);
+  test(10);
+  x = 30;
+  print x;
+
+  while i < 10 {
+    i = i + 1;
+    print fib(i);
+  };
+
+  print loopTest(50);
+};
