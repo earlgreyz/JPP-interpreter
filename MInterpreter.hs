@@ -47,7 +47,7 @@ instance Show Variable where
   show (VInt n) = show n
   show (VBool b) = show b
   show (VString s) = s
-  show (VError e) = "`" ++ e ++ "`"
+  show (VError e) = e
   show (VArray xs) = "[" ++ stringifyList xs ++ "]"
   show (VTuple xs) = "<|" ++ stringifyList xs ++ "|>"
   show VNone = "None"
@@ -90,7 +90,7 @@ evalExp (ECall c) = case c of
     case value of
       VFunc func -> func es
       _ -> throwError $ show f ++ " is not a function."
-  (CMet _ _ _) -> throwError $ "Not implemented yet." -- TODO: implement
+  (CMet x f es) -> throwError $ "Not implemented yet." -- TODO: implement
 evalExp (EVar x) = do
   env <- ask
   store <- get
@@ -102,6 +102,7 @@ evalExp (ELit l) = case l of
   LStr s -> return $ VString s
   LErr (TokenError e) -> return $ VError e
   LArr es -> mapM (\e -> evalExp e) es >>= \vs -> return $ VArray vs
+  LTup es -> mapM (\e -> evalExp e) es >>= \vs -> return $ VTuple vs
   _ -> throwError "Not implemented yet." -- TODO: implement
 evalExp (ETimes e f) = fmap VInt $ liftM2 (*) (evalInt e) (evalInt f)
 evalExp (EDiv e f) = fmap VInt $ liftM2 (div) (evalInt e) (evalInt f)
@@ -167,12 +168,21 @@ execStmt :: Stmt -> Interpreter ()
 execStmt (SBlock d s) = foldr execDecl (execManyStmt s) d
 execStmt (SAssign x e) = do
   env <- ask
-  location <- case env DataMap.!? x of
-    Nothing -> throwError $ show x ++ " was not declared in this scope."
-    Just loc -> return loc
+  location <- mustGet env x " was not declared in this scope."
   value <- evalExp e
   modify $ DataMap.insert location value
-execStmt (SUnpack xs e) = throwError $ "Not implemented yet." -- TODO: implement
+execStmt (SUnpack xs e) = do
+  tuple <- evalExp e
+  vs <- case tuple of
+    VTuple tup -> return tup
+    _ -> throwError $ "Tuple expected."
+  mapM_ assign $ zip xs vs
+  where
+    assign (x, v) = do
+      env <- ask
+      location <- mustGet env x " was not declared in this scope."
+      modify $ DataMap.insert location v
+
 execStmt (SReturn r) = case r of
   RExp e -> do
     value <- evalExp e

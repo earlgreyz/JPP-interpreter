@@ -58,3 +58,26 @@ while i < 10 {
 
 print "=======================================================";
 print loopTest(50);
+
+{
+  var array [[int]] = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];
+  print "=======================================================";
+  print "2D array: ", array;
+};
+
+{
+  var value int = 2;
+  var name string = "Jan";
+  var err error = ``;
+  var tuple <|int, string, error|> = <|value, name, err|>;
+  print "=======================================================";
+  print "Tuple: ", tuple;
+
+  tuple = <|30, "Maria", `Error`|>;
+  print "Changed Tuple: ", tuple;
+
+  print "Vars: ", value, ", ", name, ", ", err;
+  value, name, err <- tuple;
+
+  print "Unpacked: ", value, ", ", name, ", ", err;  
+};

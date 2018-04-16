@@ -75,8 +75,7 @@ PVal.     Param ::= Ident Type ;
 separator Param "," ;
 
 {- Variables -}
-AVar.     Var   ::= Ident ;
-separator Var "," ;
+separator Ident "," ;
 
 {- Declarations -}
 DVar.     Decl  ::= "var" Ident Type "=" Exp ;
@@ -90,7 +89,7 @@ separator Elif "" ;
 {- Statements -}
 SBlock.   Stmt  ::= "{" [Decl] [Stmt] "}";
 SAssign.  Stmt  ::= Ident "=" Exp ;
-SUnpack.  Stmt  ::= [Var] "<-" Exp ;
+SUnpack.  Stmt  ::= [Ident] "<-" Exp ;
 SReturn.  Stmt  ::= "return" RVal ;
 SPrint.   Stmt  ::= "print" [Exp] ;
 SIf.      Stmt  ::= "if" Exp Stmt [Elif] ;
