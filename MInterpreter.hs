@@ -214,7 +214,7 @@ execStmtOrSkip s = do
       Just loop -> when (loop == loopNormal) (execStmt s)
 
 execManyStmt :: [Stmt] -> Interpreter ()
-execManyStmt l = foldM (\_ -> execStmtOrSkip) () l
+execManyStmt l = mapM_ execStmtOrSkip l
 
 exec :: Program -> IO ()
 exec (Prog d s) = do
