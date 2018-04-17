@@ -18,7 +18,7 @@ data Var =
   | VFunc ([Exp] -> Interpreter Var)
   | VNone
 
-type Loc = (Int, Type)
+type Loc = Integer
 type Store = DataMap.Map Loc Var
 type Env = DataMap.Map Ident Loc
 type Methods = DataMap.Map Ident (Ident -> [Var] -> Interpreter Var)

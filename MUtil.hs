@@ -24,11 +24,10 @@ startMethod self = do
   return (location, value)
 
 -- Finds an unused location in the intrepreter environment and returns it
-allocate :: Type -> Interpreter Loc
-allocate t = do
+allocate :: Interpreter Loc
+allocate = do
   env <- ask
   store <- get
-  let maxEnd = if (DataMap.null env) then 0 else maximum $ map fst (DataMap.elems env)
-  let maxStore = if (DataMap.null store) then 0 else maximum $ map fst (DataMap.keys store)
-  let location = (maximum [maxStore, maxEnd]) + 1
-  return (location, t)
+  let maxEnd = if (DataMap.null env) then 0 else maximum $ DataMap.elems env
+  let maxStore = if (DataMap.null store) then 0 else maximum $ DataMap.keys store
+  return $ (maximum [maxStore, maxEnd]) + 1

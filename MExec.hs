@@ -21,11 +21,11 @@ allMethods = DataMap.unions [arrayMethods, tupleMethods, errorMethods, stringMet
 
 -- Special location used for return value
 returnLocation :: Loc
-returnLocation = (-1, TInt)
+returnLocation = -1
 
 -- Special location used for loop state
 loopLocation :: Loc
-loopLocation = (-2, TInt)
+loopLocation = -2
 
 loopBreak    = VInt (-1)
 loopContinue = VInt (1)
@@ -75,7 +75,11 @@ evalExp (ELit l) = case l of
   LArr es -> mapM (\e -> evalExp e) es >>= \vs -> return $ VArray vs
   LTup es -> mapM (\e -> evalExp e) es >>= \vs -> return $ VTuple vs
 evalExp (ETimes e f) = fmap VInt $ liftM2 (*) (evalInt e) (evalInt f)
-evalExp (EDiv e f) = fmap VInt $ liftM2 (div) (evalInt e) (evalInt f)
+evalExp (EDiv e f) = do
+  n <- evalInt e
+  m <- evalInt f
+  when (m == 0) $ throwError "Dividing by 0 is not allowed."
+  return $ VInt $ div n m
 evalExp (EMod e f) = fmap VInt $ liftM2 (mod) (evalInt e) (evalInt f)
 evalExp (EPlus e f) = fmap VInt $ liftM2 (+) (evalInt e) (evalInt f)
 evalExp (EMinus e f) = fmap VInt $ liftM2 (-) (evalInt e) (evalInt f)
@@ -96,19 +100,19 @@ evalExp (EBool e b f) = do
 -- Executes a declaration and returns and Interpreter with its environment changed.
 execDecl :: Decl -> Interpreter () -> Interpreter ()
 execDecl (DVar x t v) interpreter = do
-  location <- allocate t
+  location <- allocate
   value <- evalExp v
   modify $ DataMap.insert location value
   local (DataMap.insert x location) interpreter
 execDecl (DFunc f ps r s) interpreter = do
-  location <- allocate TInt
+  location <- allocate
   env <- ask
   modify $ DataMap.insert location $ VFunc (function f env location ps s )
   local (DataMap.insert f location) interpreter
   where
     execArg :: Env -> (Param, Exp) -> Interpreter Env
-    execArg env ((PVal x t), e) = do
-      location <- allocate t
+    execArg env ((PVal x _), e) = do
+      location <- allocate
       value <- evalExp e
       modify $ DataMap.insert location value
       return $ DataMap.insert x location env
