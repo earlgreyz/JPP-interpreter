@@ -11,10 +11,11 @@ import MInterpreter
 import MUtil
 import MArray
 import MTuple
+import MError
 
 -- Methods map
 allMethods :: Methods
-allMethods = DataMap.union arrayMethods tupleMethods
+allMethods = DataMap.unions [arrayMethods, tupleMethods, errorMethods]
 
 -- Special location used for return value
 returnLocation :: Loc

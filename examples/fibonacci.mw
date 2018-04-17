@@ -9,18 +9,16 @@ func fib1(n int) -> <|int, error|> {
   elif n == 0 or n == 1
     return <|1, ``|>
   else {
-    n_1, err = fib1(n - 1);
+    n_1, err <- fib1(n - 1);
     if err.HaveOccurred()
-      return <|0, err|>
-    endif;
+      return <|0, err|>;
 
-    n_2, err = fib1(n - 2);
+    n_2, err <- fib1(n - 2);
     if err.HaveOccurred()
-      return <|0, err|>
-    endif;
+      return <|0, err|>;
 
     return <|n_1 + n_2, ``|>;
-  } endif;
+  };
 };
 
 // Given n calcluates nth fibonacci sequence number
@@ -29,11 +27,10 @@ func fib2(n int) -> <|int, error|> {
   var current int = 1;
 
   if n < 0
-    return <|0, `n must be greater than 0`|>
-  endif;
+    return <|0, `n must be greater than 0`|>;
 
-  while (n > 0) {
-    current, last = <|current + last, current|>;
+  while (n > 1) {
+    current, last <- <|current + last, current|>;
     n = n - 1;
   };
 
@@ -43,16 +40,26 @@ func fib2(n int) -> <|int, error|> {
 var f int = 0;
 var err error = ``;
 
-f, err = fib1(5);
+f, err <- fib1(5);
 if err.HaveOccurred()
   print err
 else
-  print f
-endif;
+  print f;
 
-f, err = fib2(5);
+f, err <- fib2(5);
 if err.HaveOccurred()
   print err
 else
-  print f
-endif;
+  print f;
+
+f, err <- fib1(0-1);
+if err.HaveOccurred()
+  print err
+else
+  print f;
+
+f, err <- fib2(0-1);
+if err.HaveOccurred()
+  print err
+else
+  print f;
