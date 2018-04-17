@@ -108,3 +108,11 @@ print loopTest(50);
   print "Array: ", array;
   print "Reversed: ", reverse(array);
 };
+
+{
+  var tuple <|int, string, error|> = <|1, "Jan", `err`|>;
+  print "Tuple: ", tuple;
+  tuple.Exchange(1, "Janusz");
+  print "Changed Tuple: ", tuple;
+  print "Extracted value: ", tuple.Extract(0);
+};

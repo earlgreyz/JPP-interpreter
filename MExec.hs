@@ -10,10 +10,11 @@ import AbsGrammar
 import MInterpreter
 import MUtil
 import MArray
+import MTuple
 
 -- Methods map
 allMethods :: Methods
-allMethods = arrayMethods
+allMethods = DataMap.union arrayMethods tupleMethods
 
 -- Special location used for return value
 returnLocation :: Loc
