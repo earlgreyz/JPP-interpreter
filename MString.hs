@@ -17,7 +17,7 @@ stringMethods = DataMap.fromList [
 ensureString :: Var -> Interpreter String
 ensureString value = case value of
   VString string -> return string
-  _ -> throwError "Tuple expected."
+  _ -> throwError "String expected."
 
 stringToInt :: Ident -> [Var] -> Interpreter Var
 stringToInt self args = do

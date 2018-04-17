@@ -130,5 +130,11 @@ print loopTest(50);
 {
   var stringVal string = "321421";
   print "=======================================================";
-  print "Converting strint to int: ", stringVal.ToInt();
+  print "Converting string to int: ", stringVal.ToInt();
+};
+
+{
+  var intVal int = 321421;
+  print "=======================================================";
+  print "Converting int to string: ", intVal.ToString();
 };

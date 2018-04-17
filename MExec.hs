@@ -13,10 +13,11 @@ import MArray
 import MTuple
 import MError
 import MString
+import MInt
 
 -- Methods map
 allMethods :: Methods
-allMethods = DataMap.unions [arrayMethods, tupleMethods, errorMethods, stringMethods]
+allMethods = DataMap.unions [arrayMethods, tupleMethods, errorMethods, stringMethods, intMethods]
 
 -- Special location used for return value
 returnLocation :: Loc
