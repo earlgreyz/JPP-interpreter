@@ -12,10 +12,11 @@ import MUtil
 import MArray
 import MTuple
 import MError
+import MString
 
 -- Methods map
 allMethods :: Methods
-allMethods = DataMap.unions [arrayMethods, tupleMethods, errorMethods]
+allMethods = DataMap.unions [arrayMethods, tupleMethods, errorMethods, stringMethods]
 
 -- Special location used for return value
 returnLocation :: Loc
@@ -72,7 +73,6 @@ evalExp (ELit l) = case l of
   LErr (TokenError e) -> return $ VError e
   LArr es -> mapM (\e -> evalExp e) es >>= \vs -> return $ VArray vs
   LTup es -> mapM (\e -> evalExp e) es >>= \vs -> return $ VTuple vs
-  _ -> throwError "Not implemented yet." -- TODO: implement map
 evalExp (ETimes e f) = fmap VInt $ liftM2 (*) (evalInt e) (evalInt f)
 evalExp (EDiv e f) = fmap VInt $ liftM2 (div) (evalInt e) (evalInt f)
 evalExp (EMod e f) = fmap VInt $ liftM2 (mod) (evalInt e) (evalInt f)

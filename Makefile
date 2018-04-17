@@ -1,6 +1,6 @@
 BUILD_DIR=build
 GRAMMAR_FILES=${BUILD_DIR}/{LexGrammar,AbsGrammar,ParGrammar,SkelGrammar,PrintGrammar,ErrM}.hs
-INTERPRETER_FILES={Main,MInterpreter,MUtil,MArray,MTuple,MExec}.hs
+INTERPRETER_FILES={Main,MInterpreter,MUtil,MArray,MTuple,MString,MExec}.hs
 
 all: interpreter
 

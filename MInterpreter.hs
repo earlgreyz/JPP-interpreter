@@ -43,6 +43,7 @@ instance Show Var where
   show (VError e) = e
   show (VArray xs) = "[" ++ stringifyList xs ++ "]"
   show (VTuple xs) = "<|" ++ stringifyList xs ++ "|>"
+  show (VFunc _) = "__func__"
   show VNone = "None"
 
 stringifyList :: Show a => [a] -> String

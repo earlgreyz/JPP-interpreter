@@ -20,7 +20,6 @@ LStr.  Literal  ::= String ;
 LErr.  Literal  ::= TokenError ;
 LArr.  Literal  ::= "[" [Exp] "]" ;
 LTup.  Literal  ::= "<|" [Exp] "|>" ;
-LMap.  Literal  ::= "{" [KeyVal] "}" ;
 
 {- Comparators -}
 CLt.      Comp  ::= "<" ;
@@ -60,6 +59,7 @@ TString.  Type  ::= "string" ;
 TArray.   Type  ::= "[" Type "]" ;
 TMap.     Type  ::= "{" Type ":" Type "}" ;
 TTuple.   Type  ::= "<|" [Type] "|>" ;
+TFunc.    Type  ::= "(" [Type] ")" "->" Ret ;
 separator nonempty Type "," ;
 
 {- Function return types -}

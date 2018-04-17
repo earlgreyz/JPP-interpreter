@@ -116,3 +116,19 @@ print loopTest(50);
   print "Changed Tuple: ", tuple;
   print "Extracted value: ", tuple.Extract(0);
 };
+
+{
+  var function (int) -> int = fib;
+  var i int = 0;
+  print "=======================================================";
+  while i < 10 {
+    i = i + 1;
+    print "Fibonacci as a var ", i, " = ", function(i);
+  };
+};
+
+{
+  var stringVal string = "321421";
+  print "=======================================================";
+  print "Converting strint to int: ", stringVal.ToInt();
+};
