@@ -6,8 +6,8 @@ import Control.Monad.Except
 import Control.Monad.Reader
 
 import AbsGrammar
-import MInterpreter
-import MUtil
+import IInterpreter
+import IUtil
 
 arrayMethods :: Methods
 arrayMethods = DataMap.fromList [

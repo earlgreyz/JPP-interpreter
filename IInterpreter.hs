@@ -1,4 +1,4 @@
-module MInterpreter where
+module IInterpreter where
 
 import System.IO
 import qualified Data.Map as DataMap

@@ -12,8 +12,8 @@ import AbsGrammar
 
 import ErrM
 
-import MExec
-import MType
+import IExec
+import TExec
 
 type ParseFun a = [Token] -> Err a
 

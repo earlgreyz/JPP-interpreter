@@ -1,4 +1,4 @@
-module MType where
+module TExec where
 
 import System.IO
 import qualified Data.Map as DataMap
@@ -7,7 +7,9 @@ import Control.Monad.Except
 import Control.Monad.Reader
 
 import AbsGrammar
-import MTypeCheck
+import TCheck
+import TUtil
+import Util
 
 -- Special identifier to hold what is the currently executed function type
 funcIdent :: Ident
@@ -17,15 +19,11 @@ funcIdent = Ident "func"
 loopIdent :: Ident
 loopIdent = Ident "while"
 
-mustGet :: Show k => Ord k => DataMap.Map k a -> k -> String -> TypeCheck a
-mustGet m k err = case m DataMap.!? k of
-  Nothing -> throwError $ show k ++ err
-  Just v -> return v
-
 ensureType :: Type -> Exp -> TypeCheck ()
 ensureType t e = do
   et <- evalExpType e
-  unless (canAssign t et) $ throwError $ "Cannot assign " ++ (show et) ++ " to " ++ (show t);
+  unless (canAssign t et) $ throwError $
+    "Cannot assign " ++ (show et) ++ " to " ++ (show t)
 
 ensureInts :: [Exp] -> TypeCheck ()
 ensureInts es = mapM_ (ensureType TInt) es

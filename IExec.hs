@@ -1,4 +1,4 @@
-module MExec (exec) where
+module IExec (exec) where
 
 import System.IO ( stderr, hPutStrLn, putStrLn, putStr )
 import qualified Data.Map as DataMap
@@ -7,8 +7,9 @@ import Control.Monad.Except
 import Control.Monad.Reader
 
 import AbsGrammar
-import MInterpreter
-import MUtil
+import Util
+import IInterpreter
+import IUtil
 import MArray
 import MTuple
 import MError

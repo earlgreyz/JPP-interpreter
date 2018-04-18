@@ -7,8 +7,8 @@ import Control.Monad.Reader
 import Text.Read (readMaybe)
 
 import AbsGrammar
-import MInterpreter
-import MUtil
+import IInterpreter
+import IUtil
 
 stringMethods :: Methods
 stringMethods = DataMap.fromList [

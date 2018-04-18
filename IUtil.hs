@@ -1,4 +1,4 @@
-module MUtil where
+module IUtil where
 
 import qualified Data.Map as DataMap
 import Control.Monad.State
@@ -6,13 +6,8 @@ import Control.Monad.Except
 import Control.Monad.Reader
 
 import AbsGrammar
-import MInterpreter
-
--- Get a value at key @k from map @m or raise an error @err
-mustGet :: Show k => Ord k => DataMap.Map k a -> k -> String -> Interpreter a
-mustGet m k err = case m DataMap.!? k of
-  Nothing -> throwError $ show k ++ err
-  Just v -> return v
+import Util
+import IInterpreter
 
 -- Finds the self object for the method and returns it
 startMethod :: Ident -> Interpreter (Loc, Var)
