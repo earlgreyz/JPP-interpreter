@@ -9,5 +9,7 @@ import AbsGrammar
 
 type Env = DataMap.Map Ident Type
 
+type MethodTypes = DataMap.Map Ident (Ident -> [Type] -> TypeCheck Type)
+
 type TExcept = ExceptT String IO
 type TypeCheck = ReaderT Env TExcept

@@ -11,6 +11,13 @@ import TCheck
 import TUtil
 import Util
 
+import MArray
+import MError
+
+-- Methods type map
+allMethodTypes :: MethodTypes
+allMethodTypes = DataMap.unions [arrayMethodTypes, errorMethodTypes]
+
 -- Special identifier to hold what is the currently executed function type
 funcIdent :: Ident
 funcIdent = Ident "func"
@@ -40,9 +47,20 @@ evalExpType (ECall c) = case c of
       (TFunc a r) -> return (a, r)
       _ -> throwError $ show f ++ " is not a function."
     ts <- mapM evalExpType es
-    unless (args == ts) $ throwError $ "Function parameters type mismatch."
+    let can = all (\(a, v) -> canAssign a v) $ zip args ts
+    unless can $ throwError "Function parameters type mismatch."
     return ret
-  (CMet _ _ _) -> throwError $ "Not implemented yet." -- TODO: implement
+  (CMet s m es) -> do
+    env <- ask
+    met <- mustGet allMethodTypes m " was not declared in this scope."
+    ts <- mapM evalExpType es
+    t <- met s ts
+    (args, ret) <- case t of
+      (TFunc a r) -> return (a, r)
+      _ -> throwError $ show m ++ " is not a function."
+    let can = all (\(a, v) -> canAssign a v) $ zip args ts
+    unless can $ throwError "Function parameters type mismatch."
+    return ret
 evalExpType (EVar x) = do
   env <- ask
   t <- mustGet env x " was not declared in this scope."

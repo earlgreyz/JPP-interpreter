@@ -1,4 +1,4 @@
-module MArray (arrayMethods) where
+module MArray (arrayMethods, arrayMethodTypes) where
 
 import qualified Data.Map as DataMap
 import Control.Monad.State
@@ -8,6 +8,8 @@ import Control.Monad.Reader
 import AbsGrammar
 import IInterpreter
 import IUtil
+import TCheck
+import TUtil
 
 arrayMethods :: Methods
 arrayMethods = DataMap.fromList [
@@ -16,9 +18,21 @@ arrayMethods = DataMap.fromList [
   (Ident "Put", arrayPut),
   (Ident "Length", arrayLength)]
 
+arrayMethodTypes :: MethodTypes
+arrayMethodTypes = DataMap.fromList [
+  (Ident "Append", arrayAppendType),
+  (Ident "At", arrayAtType),
+  (Ident "Put", arrayPutType),
+  (Ident "Length", arrayLengthType)]
+
 ensureArray :: Var -> Interpreter [Var]
 ensureArray value = case value of
   VArray array -> return array
+  _ -> throwError "Array expected."
+
+ensureArrayType :: Type -> TypeCheck Type
+ensureArrayType value = case value of
+  TArray t -> return t
   _ -> throwError "Array expected."
 
 ensureIndexInBounds :: [Var] -> Int -> Interpreter ()
@@ -38,6 +52,12 @@ arrayAppend self args = do
   modify $ DataMap.insert location $ VArray (array ++ args)
   return VNone
 
+arrayAppendType :: Ident -> [Type] -> TypeCheck Type
+arrayAppendType self _ = do
+  st <- startMethodType self
+  t <- ensureArrayType st
+  return $ TFunc [t] TNone
+
 arrayAt :: Ident -> [Var] -> Interpreter Var
 arrayAt self args = do
   unless (length args == 1) $ throwError "Expected one argument."
@@ -46,6 +66,12 @@ arrayAt self args = do
   index <- ensureInt $ args !! 0
   ensureIndexInBounds array index
   return $ array !! index
+
+arrayAtType :: Ident -> [Type] -> TypeCheck Type
+arrayAtType self _ = do
+  st <- startMethodType self
+  t <- ensureArrayType st
+  return $ TFunc [TInt] t
 
 arrayPut :: Ident -> [Var] -> Interpreter Var
 arrayPut self args = do
@@ -59,9 +85,18 @@ arrayPut self args = do
   modify $ DataMap.insert location $ VArray newArray
   return VNone
 
+arrayPutType :: Ident -> [Type] -> TypeCheck Type
+arrayPutType self _ = do
+  st <- startMethodType self
+  t <- ensureArrayType st
+  return $ TFunc [TInt, t] TNone
+
 arrayLength :: Ident -> [Var] -> Interpreter Var
 arrayLength self args = do
   unless (length args == 0) $ throwError "Expected no arguments."
   (location, value) <- startMethod self
   array <- ensureArray value
   return $ VInt $ toInteger (length array)
+
+arrayLengthType :: Ident -> [Type] -> TypeCheck Type
+arrayLengthType _ _ = return $ TFunc [] TInt

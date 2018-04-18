@@ -6,6 +6,7 @@ import Control.Monad.Except
 import Control.Monad.Reader
 
 import AbsGrammar
+import Util
 import TCheck
 
 isDeclarableType :: Type -> Bool
@@ -24,3 +25,9 @@ canAssign (TArray _) (TArray TAny) = True
 canAssign (TArray a) (TArray b) = canAssign a b
 canAssign (TTuple a) (TTuple b) = all (\(x, y) -> canAssign x y) $ zip a b
 canAssign a b = a == b
+
+startMethodType :: Ident -> TypeCheck Type
+startMethodType self = do
+  env <- ask
+  t <- mustGet env self " was not declared in this scope."
+  return t
