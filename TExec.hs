@@ -14,10 +14,15 @@ import Util
 import MArray
 import MError
 import MInt
+import MString
 
 -- Methods type map
 allMethodTypes :: MethodTypes
-allMethodTypes = DataMap.unions [arrayMethodTypes, errorMethodTypes, intMethodTypes]
+allMethodTypes = DataMap.unions [
+  arrayMethodTypes,
+  errorMethodTypes,
+  intMethodTypes,
+  stringMethodTypes]
 
 -- Special identifier to hold what is the currently executed function type
 funcIdent :: Ident
