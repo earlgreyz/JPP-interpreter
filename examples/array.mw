@@ -1,17 +1,11 @@
-var arr [int];
+var arr [int] = [];
 var n int = 0;
+var element int = 0;
+var err error = ``;
 
 while n < 10 {
-  arr.Insert(n);
+  arr.Append(n);
   n = n + 1;
 };
 
-var element int;
-var err error;
-
-element, err = arr.Get(4);
-if err.HaveOccurred() {
-  print err;
-} else {
-  print element;
-};
+print arr.At(4);

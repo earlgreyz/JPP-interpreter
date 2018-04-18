@@ -1,9 +1,9 @@
 func outerFunc() -> void {
-  print "run outerFunc";
-
   func innerFunc() -> void {
     print "innerFunc";
   };
+
+  print "run outerFunc";
 
   print "call innerFunc";
   innerFunc();

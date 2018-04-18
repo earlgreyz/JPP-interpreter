@@ -17,6 +17,8 @@ import MError
 import MString
 import MInt
 
+import TExec
+
 -- Methods map
 allMethods :: Methods
 allMethods = DataMap.unions [arrayMethods, tupleMethods, errorMethods, stringMethods, intMethods]
@@ -110,7 +112,7 @@ execDecl (DVar x t v) interpreter = do
 execDecl (DFunc f ps r s) interpreter = do
   location <- allocate
   env <- ask
-  modify $ DataMap.insert location $ VFunc (function f env location ps s )
+  modify $ DataMap.insert location $ VFunc (function f r env location ps s )
   local (DataMap.insert f location) interpreter
   where
     execArg :: Env -> (Param, Exp) -> Interpreter Env
@@ -119,14 +121,15 @@ execDecl (DFunc f ps r s) interpreter = do
       value <- evalExp e
       modify $ DataMap.insert location value
       return $ DataMap.insert x location env
-    function :: Ident -> Env -> Loc -> [Param] -> Stmt -> [Exp] -> Interpreter Var
-    function f env location ps s vs = do
+    function :: Ident -> Type -> Env -> Loc -> [Param] -> Stmt -> [Exp] -> Interpreter Var
+    function f t env location ps s vs = do
         env' <- foldM execArg env $ zip ps vs
         local (\_ -> DataMap.insert f location env') $ do
           execStmt s
           store <- get
           ret <- case store DataMap.!? returnLocation of
-            Nothing -> throwError $ "Missing return statement."
+            Nothing -> if t == TNone then return VNone else
+              throwError $ "Missing return statement."
             Just value -> return value
           modify $ DataMap.delete returnLocation
           return ret
@@ -199,10 +202,14 @@ execManyStmt l = mapM_ execStmtOrSkip l
 
 -- Executes the program
 exec :: Program -> IO ()
-exec (Prog d s) = do
-  let initStore = DataMap.fromList [(loopLocation, loopNormal)]
-  let initEnv = DataMap.empty
-  result <- runExceptT $ flip runStateT initStore $ flip runReaderT initEnv $ execStmt (SBlock d s)
-  case result of
-    Left err -> hPutStrLn stderr $ "Runtime Error: " ++ err
-    Right _ -> return ()
+exec program@(Prog d s) = do
+  typeResult <- runExceptT $ execType program
+  case typeResult of
+    Left err -> hPutStrLn stderr $ "Type Error: " ++ err
+    Right _ -> do
+      let initStore = DataMap.fromList [(loopLocation, loopNormal)]
+      let initEnv = DataMap.empty
+      result <- runExceptT $ flip runStateT initStore $ flip runReaderT initEnv $ execStmt (SBlock d s)
+      case result of
+        Left err -> hPutStrLn stderr $ "Runtime Error: " ++ err
+        Right _ -> return ()

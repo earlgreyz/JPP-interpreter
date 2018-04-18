@@ -158,10 +158,7 @@ execStmtType (SCall c) = evalExpType (ECall c) >> return ()
 execManyStmtType :: [Stmt] -> TypeCheck ()
 execManyStmtType ss = mapM_ execStmtType ss
 
-execType :: Program -> IO ()
+execType :: Program -> TExcept ()
 execType (Prog d s) = do
   let initEnv = DataMap.empty
-  result <- runExceptT $ flip runReaderT initEnv $ execStmtType (SBlock d s)
-  case result of
-    Left err -> hPutStrLn stderr $ "Type Error: " ++ err
-    Right _ -> return ()
+  flip runReaderT initEnv $ execStmtType (SBlock d s)
