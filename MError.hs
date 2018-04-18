@@ -29,14 +29,14 @@ ensureErrorType value = case value of
   TError -> return TError
   _ -> throwError "Error expected."
 
-errorHaveOccurred :: Ident -> [Var] -> Interpreter Var
+errorHaveOccurred :: Method
 errorHaveOccurred self args = do
   unless (length args == 0) $ throwError "Expected no arguments."
   (_, value) <- startMethod self
   err <- ensureError value
   return $ VBool $ err /= "``"
 
-errorHaveOccurredType :: Ident -> [Type] -> TypeCheck Type
+errorHaveOccurredType :: MethodType
 errorHaveOccurredType self _ = do
   st <- startMethodType self
   ensureErrorType st

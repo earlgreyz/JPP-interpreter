@@ -15,6 +15,7 @@ import MArray
 import MError
 import MInt
 import MString
+import MTuple
 
 -- Methods type map
 allMethodTypes :: MethodTypes
@@ -22,7 +23,8 @@ allMethodTypes = DataMap.unions [
   arrayMethodTypes,
   errorMethodTypes,
   intMethodTypes,
-  stringMethodTypes]
+  stringMethodTypes,
+  tupleMethodTypes]
 
 -- Special identifier to hold what is the currently executed function type
 funcIdent :: Ident
@@ -44,29 +46,30 @@ ensureInts es = mapM_ (ensureType TInt) es
 ensureBools :: [Exp] -> TypeCheck ()
 ensureBools es = mapM_ (ensureType TBool) es
 
+evalFuncType :: Ident -> Type -> [Exp] -> TypeCheck Type
+evalFuncType f t es = do
+  (args, ret) <- case t of
+    (TFunc a r) -> return (a, r)
+    _ -> throwError $ show f ++ " is not a function."
+  ts <- mapM evalExpType es
+  let can = all (\(a, v) -> canAssign a v) $ zip args ts
+  unless can $ throwError "Function parameters type mismatch."
+  return ret
+
 evalExpType :: Exp -> TypeCheck Type
 evalExpType (ECall c) = case c of
   (CFun f es) -> do
     env <- ask
     t <- mustGet env f " was not declared in this scope."
-    (args, ret) <- case t of
-      (TFunc a r) -> return (a, r)
-      _ -> throwError $ show f ++ " is not a function."
-    ts <- mapM evalExpType es
-    let can = all (\(a, v) -> canAssign a v) $ zip args ts
-    unless can $ throwError "Function parameters type mismatch."
-    return ret
+    evalFuncType f t es
   (CMet s m es) -> do
     env <- ask
     met <- mustGet allMethodTypes m " was not declared in this scope."
-    ts <- mapM evalExpType es
-    t <- met s ts
+    t <- met s es
     (args, ret) <- case t of
       (TFunc a r) -> return (a, r)
       _ -> throwError $ show m ++ " is not a function."
-    let can = all (\(a, v) -> canAssign a v) $ zip args ts
-    unless can $ throwError "Function parameters type mismatch."
-    return ret
+    evalFuncType m t es
 evalExpType (EVar x) = do
   env <- ask
   t <- mustGet env x " was not declared in this scope."

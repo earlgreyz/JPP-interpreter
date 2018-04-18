@@ -30,7 +30,7 @@ ensureStringType value = case value of
   TString -> return TString
   _ -> throwError "String expected."
 
-stringToInt :: Ident -> [Var] -> Interpreter Var
+stringToInt :: Method
 stringToInt self args = do
   unless (length args == 0) $ throwError "Expected no arguments."
   (_, value) <- startMethod self
@@ -39,7 +39,7 @@ stringToInt self args = do
     Just int -> return $ VInt int
     Nothing -> throwError $ "Unable to convert \"" ++ string ++ "\""
 
-stringToIntType :: Ident -> [Type] -> TypeCheck Type
+stringToIntType :: MethodType
 stringToIntType self _ = do
   st <- startMethodType self
   ensureStringType st

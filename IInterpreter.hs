@@ -22,7 +22,8 @@ type Loc = Integer
 type Store = DataMap.Map Loc Var
 type Env = DataMap.Map Ident Loc
 
-type Methods = DataMap.Map Ident (Ident -> [Var] -> Interpreter Var)
+type Method = Ident -> [Var] -> Interpreter Var
+type Methods = DataMap.Map Ident Method
 
 type IExcept = ExceptT String IO
 type IState = StateT Store IExcept

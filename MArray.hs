@@ -44,7 +44,7 @@ ensureInt value = case value of
   VInt integer -> return $ fromIntegral integer
   _ -> throwError "Integer expected."
 
-arrayAppend :: Ident -> [Var] -> Interpreter Var
+arrayAppend :: Method
 arrayAppend self args = do
   unless (length args == 1) $ throwError "Expected one argument."
   (location, value) <- startMethod self
@@ -52,13 +52,13 @@ arrayAppend self args = do
   modify $ DataMap.insert location $ VArray (array ++ args)
   return VNone
 
-arrayAppendType :: Ident -> [Type] -> TypeCheck Type
+arrayAppendType :: MethodType
 arrayAppendType self _ = do
   st <- startMethodType self
   t <- ensureArrayType st
   return $ TFunc [t] TNone
 
-arrayAt :: Ident -> [Var] -> Interpreter Var
+arrayAt :: Method
 arrayAt self args = do
   unless (length args == 1) $ throwError "Expected one argument."
   (_, value) <- startMethod self
@@ -67,13 +67,13 @@ arrayAt self args = do
   ensureIndexInBounds array index
   return $ array !! index
 
-arrayAtType :: Ident -> [Type] -> TypeCheck Type
+arrayAtType :: MethodType
 arrayAtType self _ = do
   st <- startMethodType self
   t <- ensureArrayType st
   return $ TFunc [TInt] t
 
-arrayPut :: Ident -> [Var] -> Interpreter Var
+arrayPut :: Method
 arrayPut self args = do
   unless (length args == 2) $ throwError "Expected two arguments."
   (location, value) <- startMethod self
@@ -85,18 +85,18 @@ arrayPut self args = do
   modify $ DataMap.insert location $ VArray newArray
   return VNone
 
-arrayPutType :: Ident -> [Type] -> TypeCheck Type
+arrayPutType :: MethodType
 arrayPutType self _ = do
   st <- startMethodType self
   t <- ensureArrayType st
   return $ TFunc [TInt, t] TNone
 
-arrayLength :: Ident -> [Var] -> Interpreter Var
+arrayLength :: Method
 arrayLength self args = do
   unless (length args == 0) $ throwError "Expected no arguments."
   (location, value) <- startMethod self
   array <- ensureArray value
   return $ VInt $ toInteger (length array)
 
-arrayLengthType :: Ident -> [Type] -> TypeCheck Type
+arrayLengthType :: MethodType
 arrayLengthType _ _ = return $ TFunc [] TInt

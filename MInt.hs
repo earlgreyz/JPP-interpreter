@@ -30,14 +30,14 @@ ensureIntType value = case value of
   TInt -> return TInt
   _ -> throwError "Integer expected."
 
-intToString :: Ident -> [Var] -> Interpreter Var
+intToString :: Method
 intToString self args = do
   unless (length args == 0) $ throwError "Expected no arguments."
   (_, value) <- startMethod self
   int <- ensureInt value
   return $ VString $ show int
 
-intToStringType :: Ident -> [Type] -> TypeCheck Type
+intToStringType :: MethodType
 intToStringType self _ = do
   st <- startMethodType self
   ensureIntType st
