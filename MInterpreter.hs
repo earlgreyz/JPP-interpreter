@@ -23,9 +23,9 @@ type Store = DataMap.Map Loc Var
 type Env = DataMap.Map Ident Loc
 type Methods = DataMap.Map Ident (Ident -> [Var] -> Interpreter Var)
 
-type MExcept = ExceptT String IO
-type MState = StateT Store MExcept
-type Interpreter = ReaderT Env MState
+type IExcept = ExceptT String IO
+type IState = StateT Store IExcept
+type Interpreter = ReaderT Env IState
 
 instance Eq Var where
   (VInt x) == (VInt y) = x == y

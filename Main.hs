@@ -13,6 +13,7 @@ import AbsGrammar
 import ErrM
 
 import MExec
+import MType
 
 type ParseFun a = [Token] -> Err a
 
@@ -35,6 +36,7 @@ run v p s = let ts = myLLexer s in case p ts of
      putStrLn s
      exitFailure
    Ok tree -> do
+     execType tree
      exec tree
      exitSuccess
 

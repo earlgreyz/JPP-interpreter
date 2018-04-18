@@ -68,12 +68,13 @@ evalExp (EVar x) = do
   location <- mustGet env x " was not declared in this scope."
   mustGet store location " has not yet been initialized."
 evalExp (ELit l) = case l of
+  LNon -> return VNone
   LInt n -> return $ VInt n
   LBool b -> return $ VBool $ if b == BTrue then True else False
   LStr s -> return $ VString s
   LErr (TokenError e) -> return $ VError e
-  LArr es -> mapM (\e -> evalExp e) es >>= \vs -> return $ VArray vs
-  LTup es -> mapM (\e -> evalExp e) es >>= \vs -> return $ VTuple vs
+  LArr es -> mapM evalExp es >>= return . VArray
+  LTup es -> mapM evalExp es >>= return . VTuple
 evalExp (ETimes e f) = fmap VInt $ liftM2 (*) (evalInt e) (evalInt f)
 evalExp (EDiv e f) = do
   n <- evalInt e
@@ -147,12 +148,9 @@ execStmt (SUnpack xs e) = do
       env <- ask
       location <- mustGet env x " was not declared in this scope."
       modify $ DataMap.insert location v
-execStmt (SReturn r) = case r of
-  RExp e -> do
-    value <- evalExp e
-    modify $ DataMap.insert returnLocation value
-  RNone -> do
-    modify $ DataMap.insert returnLocation VNone
+execStmt (SReturn e) = do
+  value <- evalExp e
+  modify $ DataMap.insert returnLocation value
 execStmt (SPrint es) = do
   mapM_ (\e -> evalExp e >>= liftIO . putStr . show) es
   liftIO . putStr $ "\n"
