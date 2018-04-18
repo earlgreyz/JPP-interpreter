@@ -25,7 +25,7 @@ mustGet m k err = case m DataMap.!? k of
 ensureType :: Type -> Exp -> TypeCheck ()
 ensureType t e = do
   et <- evalExpType e
-  unless (et == t) $ throwError $ "Expected " ++ (show et) ++ " to be " ++ (show t);
+  unless (canAssign t et) $ throwError $ "Cannot assign " ++ (show et) ++ " to " ++ (show t);
 
 ensureInts :: [Exp] -> TypeCheck ()
 ensureInts es = mapM_ (ensureType TInt) es
@@ -56,10 +56,11 @@ evalExpType (ELit l) = case l of
   LStr _ -> return TString
   LErr _ -> return TError
   LArr es -> do
-    ts <- mapM evalExpType es
-    let t = DataSet.fromList ts
-    unless (DataSet.size t == 1) $ throwError "Types in the array mismatch."
-    return $ TArray $ ts !! 0
+    if es == [] then return $ TArray TAny else do
+      ts <- mapM evalExpType es
+      let t = DataSet.fromList ts
+      unless (DataSet.size t == 1) $ throwError "Types in the array mismatch."
+      return $ TArray $ ts !! 0
   LTup es -> mapM evalExpType es >>= return . TTuple
 evalExpType (ETimes e f) = ensureInts [e, f] >> return TInt
 evalExpType (EDiv e f) = ensureInts [e, f] >> return TInt
@@ -71,7 +72,7 @@ evalExpType (EBool e _ f) = ensureBools [e, f] >> return TBool
 
 execDeclType :: Decl -> TypeCheck () -> TypeCheck ()
 execDeclType (DVar x t v) typeCheck = do
-  when (t == TNone) $ throwError "A variable cannot be declared as type None."
+  unless (isDeclarableType t) $ throwError "A variable cannot be declared as type None/Any."
   ensureType t v
   local (DataMap.insert x t) typeCheck
 execDeclType (DFunc f ps r s) typeCheck = throwError $ "Not implemented yet." -- TODO: implement

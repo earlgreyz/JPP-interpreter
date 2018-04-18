@@ -50,6 +50,7 @@ CFun.     Call  ::= Ident "(" [Exp] ")" ;
 CMet.     Call  ::= Ident "." Ident "(" [Exp] ")" ;
 
 {- Types -}
+TAny.     Type  ::= "any" ;
 TNone.    Type  ::= "void" ;
 TInt.     Type  ::= "int" ;
 TBool.    Type  ::= "bool" ;
