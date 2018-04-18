@@ -75,14 +75,19 @@ execDeclType (DVar x t v) typeCheck = do
   unless (isDeclarableType t) $ throwError "A variable cannot be declared as type None/Any."
   ensureType t v
   local (DataMap.insert x t) typeCheck
-execDeclType (DFunc f ps r s) typeCheck = throwError $ "Not implemented yet." -- TODO: implement
-{-}  pts <- mapM (\(Param _ t) -> t) ps
+execDeclType (DFunc f ps r s) typeCheck = do
+  pts <- mapM paramType ps
   let ft = TFunc pts r
-  tc <- foldr execParam $ local (DataMap.insert f ft) typeCheck
-  execStmtType s
+  let funEnv = local (DataMap.insert f ft)
+  foldr execParam ( funEnv . local (DataMap.insert funcIdent r) $ execStmtType s) ps
+  funEnv typeCheck
   where
+    paramType :: Param -> TypeCheck Type
+    paramType (PVal _ t) = return t
     execParam :: Param -> TypeCheck () -> TypeCheck ()
-    execParam (Param x t) typeCheck = local (DataMap.insert x t) typeCheck -}
+    execParam (PVal x t) typeCheck = do
+      unless (isDeclarableType t) $ throwError "A variable cannot be declared as type None/Any."
+      local (DataMap.insert x t) typeCheck
 
 execStmtType :: Stmt -> TypeCheck ()
 execStmtType (SBlock d s) = foldr execDeclType (execManyStmtType s) d
