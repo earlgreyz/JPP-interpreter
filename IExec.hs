@@ -101,6 +101,8 @@ evalExp (EBool e b f) = do
     BAnd -> return (&&)
     BOr -> return (||)
   fmap VBool $ liftM2 op (evalBool e) (evalBool f)
+evalExp (ENot e) = evalBool e >>= \b -> return $ VBool $ not b
+
 
 -- Executes a declaration and returns and Interpreter with its environment changed.
 execDecl :: Decl -> Interpreter () -> Interpreter ()

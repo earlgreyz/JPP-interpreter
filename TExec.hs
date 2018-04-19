@@ -94,6 +94,7 @@ evalExpType (EPlus e f) = ensureInts [e, f] >> return TInt
 evalExpType (EMinus e f) = ensureInts [e, f] >> return TInt
 evalExpType (EComp e _ f) = ensureInts [e, f] >> return TBool
 evalExpType (EBool e _ f) = ensureBools [e, f] >> return TBool
+evalExpType (ENot e) = ensureBools [e] >> return TBool
 
 execDeclType :: Decl -> TypeCheck () -> TypeCheck ()
 execDeclType (DVar x t v) typeCheck = do
