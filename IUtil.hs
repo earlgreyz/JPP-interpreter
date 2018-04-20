@@ -25,4 +25,6 @@ allocate = do
   store <- get
   let maxEnd = if (DataMap.null env) then 0 else maximum $ DataMap.elems env
   let maxStore = if (DataMap.null store) then 0 else maximum $ DataMap.keys store
-  return $ (maximum [maxStore, maxEnd]) + 1
+  let location = (maximum [maxStore, maxEnd]) + 1
+  modify $ DataMap.insert location VNone
+  return $ location

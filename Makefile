@@ -7,7 +7,7 @@ FILES=Main.hs ${I_FILES} ${T_FILES} ${M_FILES}
 
 all: interpreter
 
-interpreter: grammar ${FILES}
+interpreter: grammar *.hs
 	ghc --make -XFlexibleContexts ${FILES} ${G_FILES} -o interpreter -outputdir ${BUILD_DIR}
 
 grammar: Grammar.cf

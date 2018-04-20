@@ -59,7 +59,7 @@ TError.   Type  ::= "error" ;
 TArray.   Type  ::= "[" Type "]" ;
 TTuple.   Type  ::= "<|" [Type] "|>" ;
 TFunc.    Type  ::= "(" [Type] ")" "->" Type ;
-separator nonempty Type "," ;
+separator Type "," ;
 
 {- Function parameters -}
 PVal.     Param ::= Ident Type ;

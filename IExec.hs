@@ -70,7 +70,9 @@ evalExp (EVar x) = do
   env <- ask
   store <- get
   location <- mustGet env x " was not declared in this scope."
-  mustGet store location " has not yet been initialized."
+  value <- mustGet store location " has not yet been initialized."
+  when (value == VNone) $ throwError $ show x ++ " has not yet been initialized."
+  return value
 evalExp (ELit l) = case l of
   LNon -> return VNone
   LInt n -> return $ VInt n
@@ -125,16 +127,16 @@ execDecl (DFunc f ps r s) interpreter = do
       return $ DataMap.insert x location env
     function :: Ident -> Type -> Env -> Loc -> [Param] -> Stmt -> [Exp] -> Interpreter Var
     function f t env location ps s vs = do
-        env' <- foldM execArg env $ zip ps vs
-        local (\_ -> DataMap.insert f location env') $ do
-          execStmt s
-          store <- get
-          ret <- case store DataMap.!? returnLocation of
-            Nothing -> if t == TNone then return VNone else
-              throwError $ "Missing return statement."
-            Just value -> return value
-          modify $ DataMap.delete returnLocation
-          return ret
+      env' <- foldM execArg env $ zip ps vs
+      local (\_ -> DataMap.insert f location env') $ do
+        execStmt s
+        store <- get
+        ret <- case store DataMap.!? returnLocation of
+          Nothing -> if t == TNone then return VNone else
+            throwError $ "Missing return statement."
+          Just value -> return value
+        modify $ DataMap.delete returnLocation
+        return ret
 
 -- Executes a single statement
 execStmt :: Stmt -> Interpreter ()
