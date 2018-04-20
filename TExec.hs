@@ -98,7 +98,7 @@ evalExpType (ENot e) = ensureBools [e] >> return TBool
 
 execDeclType :: Decl -> TypeCheck () -> TypeCheck ()
 execDeclType (DVar x t v) typeCheck = do
-  unless (isDeclarableType t) $ throwError "A variable cannot be declared as type None/Any."
+  unless (isDeclarableType t) $ throwError (show t) ++ " is not a valid type"
   ensureType t v
   local (DataMap.insert x t) typeCheck
 execDeclType (DFunc f ps r s) typeCheck = do

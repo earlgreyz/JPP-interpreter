@@ -17,7 +17,7 @@ isDeclarableType TBool = True
 isDeclarableType TString = True
 isDeclarableType TError = True
 isDeclarableType (TArray ts) = isDeclarableType ts
-isDeclarableType (TTuple ts) = all isDeclarableType ts
+isDeclarableType (TTuple ts) = (ts /= []) && (all isDeclarableType ts)
 isDeclarableType (TFunc ts r) = (all isDeclarableType ts) && r /= TAny
 
 canAssign :: Type -> Type -> Bool
