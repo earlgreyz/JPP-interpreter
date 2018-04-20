@@ -1,0 +1,43 @@
+var intAssigned int = 42;
+var boolAssigned bool = true;
+var stringAssigned string = "example string";
+var errorAssigned error = `example error`;
+var arrayAssigned [int] = [42, 3];
+var tupleAssigned <|int, int, string|> = <|3, 14, "pi"|>;
+
+func noParamsNoRet() -> void {
+  var a int = 0;
+};
+
+func noParamsRet() -> int {
+  return 42;
+};
+
+func oneParamNoRet(x int) -> void {
+  print x;
+};
+
+func oneParamRet(x int) -> <|int, int|> {
+  return <|x, x|>;
+};
+
+func multipleParamNoRet(x int, y string) -> void {
+  print x;
+  print y;
+};
+
+func multipleParamRet(x int, y string) -> <|int, string|> {
+  return <|x, y|>;
+};
+
+print intAssigned;
+print boolAssigned;
+print stringAssigned;
+print arrayAssigned;
+print tupleAssigned;
+print noParamsNoRet, "() => ", noParamsNoRet();
+print noParamsRet, "() => ", noParamsRet();
+print oneParamNoRet, "() => ", oneParamNoRet(0);
+print oneParamRet, "(42) => ", oneParamRet(42);
+print multipleParamNoRet, "(42, \"Test\") => ", multipleParamNoRet(42, "Test");
+print multipleParamRet, "(42, \"Test\") => ", multipleParamRet(42, "Test");

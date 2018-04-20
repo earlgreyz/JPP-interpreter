@@ -1,0 +1,36 @@
+var x int = 0;
+var scale int = 100;
+
+// Functions as parameter, returning function closure.
+func lazyApplyScale(f (int) -> int, x int) -> () -> int {
+  func lazy() -> int {
+    return (f(x) * scale) / 100;
+  };
+  return lazy;
+};
+
+func sqr(x int) -> int {
+  return x * x;
+};
+
+func cube(x int) -> int {
+  return x * x * x;
+};
+
+var lazySqr8Scaled () -> int = lazyApplyScale(sqr, 8);
+var lazyCube8Scaled () -> int = lazyApplyScale(cube, 8);
+print lazySqr8Scaled();
+print lazyCube8Scaled();
+
+// Functions nesting with static binding,
+{
+  var scale int = 0;
+  scale = 50;
+  lazySqr8Scaled = lazyApplyScale(sqr, 8);
+  print lazySqr8Scaled();
+  print lazyCube8Scaled();
+};
+
+scale = 50;
+print lazySqr8Scaled();
+print lazyCube8Scaled();

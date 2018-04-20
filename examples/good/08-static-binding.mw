@@ -1,0 +1,22 @@
+var i int = 0;
+
+func myFunc() -> void {
+  print i;
+  if i == 0
+    print "Static binding works!"
+  else
+    print "Static binding doesn't work!";
+};
+
+{
+  var i string = "John";
+  i = "Alice";
+  print i;
+  myFunc();
+};
+
+print i;
+if i == 0
+  print "Static binding works!"
+else
+  print "Static binding doesn't work!";

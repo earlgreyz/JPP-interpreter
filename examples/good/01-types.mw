@@ -20,20 +20,20 @@ func noParamsRet() -> int {
   return 42;
 };
 
-func oneParamNoRet (x int) -> void {
+func oneParamNoRet(x int) -> void {
   print x;
 };
 
-func oneParamRet (x int) -> <|int, int|> {
+func oneParamRet(x int) -> <|int, int|> {
   return <|x, x|>;
 };
 
-func multipleParamNoRet (x int, y string) -> void {
+func multipleParamNoRet(x int, y string) -> void {
   print x;
   print y;
 };
 
-func multipleParamRet (x int, y string) -> <|int, string|> {
+func multipleParamRet(x int, y string) -> <|int, string|> {
   return <|x, y|>;
 };
 
@@ -43,3 +43,5 @@ stringAssigned = "example string";
 errorAssigned = `example error`;
 arrayAssigned = [42, 3];
 tupleAssigned = <|3, 14, "pi"|>;
+
+print "Types do work!";

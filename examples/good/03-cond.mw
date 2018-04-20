@@ -1,0 +1,49 @@
+var i int = 0;
+
+while i < 10
+  i = i + 1;
+
+if i == 10
+  print "While loops do work!"
+else
+  print "While loops don't work.";
+
+i = 0;
+if i < 10
+  print "Ifs do work!"
+elif i < 20
+  print "Ifs don't work!"
+elif i < 30
+  print "Ifs don't work!"
+else
+  print "Ifs don't work!";
+
+i = 10;
+if i < 10
+  print "Ifs don't work!"
+elif i < 20
+  print "Ifs do work!"
+elif i < 30
+  print "Ifs don't work!"
+else
+  print "Ifs don't work!";
+
+i = 20;
+if i < 10
+  print "Ifs don't work!"
+elif i < 20
+  print "Ifs don't work!"
+elif i < 30
+  print "Ifs do work!"
+else
+  print "Ifs don't work!";
+
+i = 30;
+if i < 10
+  print "Ifs don't work!"
+elif i < 20
+  print "Ifs don't work!"
+elif i < 30
+  print "Ifs don't work!"
+else
+  print "Ifs do work!";

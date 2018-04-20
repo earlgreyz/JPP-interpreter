@@ -1,0 +1,25 @@
+var str string = "42";
+var x int = 0;
+
+func plusplusX() -> int {
+  x = x + 1;
+  return x;
+};
+
+x = str.ToInt();
+if x == 42
+  print "String.ToInt() conversions do work!"
+else
+  print "String.ToInt() conversions don't work!";
+
+x = 15;
+str = x.ToString();
+print str;
+print "Int.ToString() conversions do work!";
+
+x = 0;
+print plusplusX() * 2 - 3 + plusplusX();
+if x == 2
+  print "Expressions sideefects do work!"
+else
+  print "Expressions sideefects don't work!";

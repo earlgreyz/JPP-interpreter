@@ -1,3 +1,5 @@
+// Uses most of the constructs available in a language
+
 var f int = 0;
 var x string = "Ala ma kota";
 

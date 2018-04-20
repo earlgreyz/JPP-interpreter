@@ -1,0 +1,25 @@
+var fibCache [int] = [];
+var array2d [[string]] = [["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"]];
+var i int = 0;
+
+func fib(n int) -> int {
+  if n == 0 or n == 1
+    return 1;
+
+  return fib(n -1) + fib (n -2);
+};
+
+print array2d;
+while i < 3 {
+  print array2d.At(i);
+  i = i + 1;
+};
+
+i = 0;
+while i < 10 {
+  fibCache.Append(fib(i));
+  i = i + 1;
+};
+
+print fibCache;
+print "5th fib number is: ", fibCache.At(5);

@@ -1,0 +1,3 @@
+var x [int] = [];
+x = [1, 2];
+x = ["A"]; // Static type checking failure

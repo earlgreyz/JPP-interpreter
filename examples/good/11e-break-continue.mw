@@ -1,0 +1,37 @@
+var i int = 0;
+var j int = 0;
+
+// Prints only even numbers in range [1 .. 10];
+while true {
+  i = i + 1;
+  if i > 10
+    break;
+
+  if i % 2 == 1
+    continue;
+
+  print i;
+};
+
+// Nested loops
+i = 0; while true {
+  i = i + 1;
+  if i > 10
+    break;
+
+  if i % 2 == 1
+    continue;
+
+  print i;
+
+  j = 0; while true {
+    j = j + 1;
+    if j > 10
+      break;
+
+    if j % 2 == 1
+      continue;
+
+    print "  * i, j => ", i, ", ", j;
+  };
+};

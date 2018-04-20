@@ -1,0 +1,2 @@
+var str string = "Not a number";
+print str.ToInt(); // Conversion error

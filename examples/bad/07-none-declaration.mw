@@ -1,0 +1,2 @@
+func myFunc() -> void print "myFunc";
+var x void = myFunc(); // Invalid type declaration

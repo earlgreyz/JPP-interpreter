@@ -1,0 +1,22 @@
+var i int = 0;
+var s string = "String";
+var tuple <|int, string|> = <|42, "Test"|>;
+var nestedTuple <|int, string, <|int, string|>|> = <|15, "John", <|100, "Steve"|>|>;
+
+print i;
+print s;
+print tuple;
+print nestedTuple;
+
+tuple = <|33, "Anna"|>;
+print tuple;
+
+// Tuple unpacking
+i, s <- tuple;
+print i;
+print s;
+
+i, s, tuple <- nestedTuple;
+print i;
+print s;
+print tuple;
