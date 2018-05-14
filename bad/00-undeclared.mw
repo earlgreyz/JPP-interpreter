@@ -1,0 +1,7 @@
+var x int = 0;
+
+{
+  var y int = 10;
+};
+
+y = x + 5; // variable not in scope

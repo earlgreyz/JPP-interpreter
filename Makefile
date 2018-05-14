@@ -20,4 +20,4 @@ fast: *.hs
 
 .PHONY:
 clean:
-	rm -f ${BUILD_DIR}/*
+	rm -f ${BUILD_DIR}/* interpreter
