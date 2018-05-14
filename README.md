@@ -1,3 +1,26 @@
+# Building
+Students uses old version of Haskell and BNFC, therefore a newer version should
+be prepended to the PATH before building the project.
+```sh
+export PATH=~/.cabal/bin:/home/students/inf/PUBLIC/MRJP/ghc-8.2.2/bin:$PATH
+```
+
+- Installing dependencies
+ ```sh
+ make deps
+ ```
+- Generating the parser
+ ```
+ make grammar
+ ```
+- Compiling the interpreter
+ ```
+ make interpreter
+ ```
+
+Running `make` with no subcommand will execute all of the above.
+
+
 # Interpreter
 ## Type definitions
 ```hs
